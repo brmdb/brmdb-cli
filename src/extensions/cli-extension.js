@@ -19,8 +19,6 @@ module.exports = toolbox => {
     return getEnquirer().prompt(questions)
   }
 
-  toolbox.db = require('../database/models')
-
   // enable this if you want to read configuration in from
   // the current folder's package.json (in a "bmdb-cli" property),
   // bmdb-cli.config.json, etc.
