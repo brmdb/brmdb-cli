@@ -1,0 +1,57 @@
+{
+  "name": "brmdb-cli",
+  "version": "0.0.1",
+  "description": "brmdb CLI",
+  "private": true,
+  "bin": {
+    "brmdb": "bin/brmdb"
+  },
+  "scripts": {
+    "format": "prettier --write **/*.{js,json} && eslint --fix .",
+    "lint": "eslint --fix .",
+    "test": "jest",
+    "watch": "jest --watch",
+    "snapupdate": "jest --updateSnapshot",
+    "coverage": "jest --coverage"
+  },
+  "files": [
+    "src",
+    "LICENSE",
+    "readme.md",
+    "docs",
+    "bin"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "enquirer": "^2.3.2",
+    "enquirer-prompt-editor": "^2.0.1",
+    "gluegun": "^2.1.0",
+    "prompt-editor": "^0.1.0",
+    "sequelize": "^5.21.2",
+    "sqlite3": "^4.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "jest": "^23.6.0",
+    "prettier": "^1.12.1",
+    "standard": "^12.0.1"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  }
+}
