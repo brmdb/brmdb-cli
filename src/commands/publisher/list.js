@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'publisher:list',
+  name: 'list',
   description: 'List all publishers in the database',
   run: async toolbox => {
     const {

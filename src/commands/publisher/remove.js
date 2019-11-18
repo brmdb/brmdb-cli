@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'publisher:remove',
+  name: 'remove',
   description: 'Remove the publisher from the database',
   run: async toolbox => {
     const {

@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'publisher:create',
+  name: 'create',
   description: 'Create a new publisher in the database',
   run: async toolbox => {
     const {
@@ -8,7 +8,7 @@ module.exports = {
       db: { Publisher }
     } = toolbox
 
-    const prompt = require('../prompts/publisher')
+    const prompt = require('../../prompts/publisher')
 
     const result = await customAsk(prompt)
     const publisher = await Publisher.create(result)

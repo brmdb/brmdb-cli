@@ -3,10 +3,9 @@ module.exports = {
   description: 'Export the entire database into the project format',
   run: async toolbox => {
     const {
-      print: { info, success, debug },
+      print: { success },
       filesystem,
-      exportModels,
-      db: { Publisher }
+      exportModels
     } = toolbox
 
     const outputFolder = filesystem.path('public')
@@ -14,5 +13,6 @@ module.exports = {
     filesystem.dir(outputFolder).dir('publishers')
 
     await exportModels.publisher(filesystem.path(outputFolder, 'publishers'))
+    success('Database exported with success.')
   }
 }

@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'publisher:edit',
+  name: 'edit',
   description: 'Edit a existing publisher in the database',
   run: async toolbox => {
     const {
@@ -30,7 +30,7 @@ module.exports = {
       where: { id: publisherToEdit }
     })
 
-    const prompt = require('../prompts/publisher')
+    const prompt = require('../../prompts/publisher')
     const filledPrompt = fillPrompt(prompt, publisher)
 
     const result = await customAsk(filledPrompt)
