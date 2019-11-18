@@ -14,6 +14,7 @@ module.exports = {
 
     await exportModels.publisher(filesystem.path(outputFolder, 'publishers'))
     await exportModels.action(filesystem.path(outputFolder, 'actions'))
+    await exportModels.label(filesystem.path(outputFolder, 'labels'))
     success('Database exported with success.')
   }
 }
