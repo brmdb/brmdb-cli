@@ -1,6 +1,13 @@
 'use strict'
 
+/** @typedef {import('sequelize/lib/query-interface')} QueryInterface */
+/** @typedef {import('sequelize/lib/data-types')} DataTypes */
+
 module.exports = {
+  /**
+   * @param {QueryInterface} queryInterface
+   * @param {DataTypes} Sequelize
+   */
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Publishers', {
       id: {
@@ -39,6 +46,11 @@ module.exports = {
       }
     })
   },
+
+  /**
+   * @param {QueryInterface} queryInterface
+   * @param {DataTypes} Sequelize
+   */
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('Publishers')
   }

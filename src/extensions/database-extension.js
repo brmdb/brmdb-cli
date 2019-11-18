@@ -2,7 +2,7 @@ module.exports = async toolbox => {
   const fs = require('fs')
   const path = require('path')
   const config = require('../config/database')
-  const Sequelize = require('sequelize')
+  const { Sequelize } = require('sequelize')
 
   toolbox.db = {}
 

@@ -1,5 +1,12 @@
 'use strict'
 
+/** @typedef {import('sequelize/lib/sequelize')} Sequelize */
+/** @typedef {import('sequelize/lib/data-types')} DataTypes */
+
+/**
+ * @param {Sequelize} sequelize
+ * @param {DataTypes} DataTypes
+ */
 module.exports = (sequelize, DataTypes) => {
   const Publisher = sequelize.define(
     'Publisher',
