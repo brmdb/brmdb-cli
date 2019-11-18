@@ -10,9 +10,10 @@ module.exports = {
 
     const outputFolder = filesystem.path('public')
     filesystem.remove(outputFolder)
-    filesystem.dir(outputFolder).dir('publishers')
+    filesystem.dir(outputFolder)
 
     await exportModels.publisher(filesystem.path(outputFolder, 'publishers'))
+    await exportModels.action(filesystem.path(outputFolder, 'actions'))
     success('Database exported with success.')
   }
 }

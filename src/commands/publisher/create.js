@@ -5,7 +5,7 @@ module.exports = {
     const {
       print: { success },
       customAsk,
-      db: { Publisher }
+      db: { Publisher, Action, logAction }
     } = toolbox
 
     const prompt = require('../../prompts/publisher')
@@ -13,6 +13,7 @@ module.exports = {
     const result = await customAsk(prompt)
     const publisher = await Publisher.create(result)
 
+    logAction('Publisher', publisher.id, Action.types.CREATE)
     success(`Publisher '${publisher.name}' created with id ${publisher.id}.`)
   }
 }

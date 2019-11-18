@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'bmdb-cli',
+  name: 'brmdb',
   run: async toolbox => {
     const { print } = toolbox
 

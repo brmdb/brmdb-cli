@@ -6,7 +6,7 @@ module.exports = {
       parameters: { options },
       print: { success, error },
       prompt: { confirm },
-      db: { Publisher }
+      db: { Publisher, Action, logAction }
     } = toolbox
 
     if (!options.id) {
@@ -30,6 +30,7 @@ module.exports = {
       (await confirm('Are you sure?'))
     ) {
       await Publisher.destroy({ where: { id: options.id } })
+      logAction('Publisher', options.id, Action.types.DELETE)
       success('Publisher removed with success.')
     }
   }

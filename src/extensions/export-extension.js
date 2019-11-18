@@ -25,4 +25,21 @@ module.exports = toolbox => {
       await toolbox.filesystem.writeAsync(publisherFile, publisher)
     }
   }
+
+  toolbox.exportModels.action = async folder => {
+    // Part 1: generate the whole actions log.
+    const actionsLog = await toolbox.db.Action.findAll().map(p =>
+      p.get({ plain: true })
+    )
+    const logFile = toolbox.filesystem.path(folder, 'all.json')
+    await toolbox.filesystem.writeAsync(logFile, actionsLog)
+
+    // Part 2: generate the last 20 actions list.
+    const lastActions = await toolbox.db.Action.findAll({
+      limit: 20,
+      order: [['createdAt', 'DESC']]
+    }).map(p => p.get({ plain: true }))
+    const recentLogFile = toolbox.filesystem.path(folder, 'latest.json')
+    await toolbox.filesystem.writeAsync(recentLogFile, lastActions)
+  }
 }

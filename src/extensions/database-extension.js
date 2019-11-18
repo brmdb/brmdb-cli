@@ -37,4 +37,13 @@ module.exports = async toolbox => {
 
   toolbox.db.sequelize = sequelize
   toolbox.db.Sequelize = Sequelize
+
+  toolbox.db.logAction = async (model, referer, action) => {
+    const contributor = await toolbox.system.run(
+      'git config --global user.name',
+      { trim: true }
+    )
+
+    toolbox.db.Action.create({ model, referer, action, contributor })
+  }
 }
