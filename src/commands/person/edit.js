@@ -49,7 +49,10 @@ module.exports = {
       }
     ])
 
-    if (linkOption === 'NOTHING') return
+    if (linkOption === 'NOTHING') {
+      success(`Person '${person.name}' edited with success.`)
+      return
+    }
 
     if (linkOption === 'ADD_NEW') {
       const linkPrompt = require('../../prompts/externalLink')

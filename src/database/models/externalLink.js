@@ -37,6 +37,13 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'externalLinkId',
       otherKey: 'publisherId'
     })
+
+    ExternalLink.belongsToMany(models.Serie, {
+      through: 'SerieExternalLinks',
+      as: 'series',
+      foreignKey: 'externalLinkId',
+      otherKey: 'serieId'
+    })
   }
 
   return ExternalLink
