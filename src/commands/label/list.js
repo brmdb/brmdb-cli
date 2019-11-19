@@ -5,32 +5,42 @@ module.exports = {
     const {
       parameters: { options },
       print: { info, error, table },
-      db: { Publisher }
+      db: { Label, Publisher }
     } = toolbox
 
+    let labels = []
+
     if (!options.publisher) {
-      error('You need to specify a publisher with the --publisher option.')
-      return
-    }
+      labels = await Label.findAll({
+        include: [{ model: Publisher, as: 'publisher' }]
+      })
+    } else {
+      const publisher = await Publisher.findOne({
+        where: { id: options.publisher }
+      })
+      if (!publisher) {
+        error(`A publisher with id ${options.publisher} does not exists.`)
+        return
+      }
 
-    const publisher = await Publisher.findOne({
-      where: { id: options.publisher }
-    })
-    if (!publisher) {
-      error(`A publisher with id ${options.publisher} does not exists.`)
-      return
+      labels = await publisher.getLabels()
     }
-
-    const labels = await publisher.getLabels()
 
     if (labels.length === 0) {
-      info('The publisher specified has no labels in the database.')
+      info('No labels were found in the database.')
       return
     }
 
-    const labelsInTableFormat = labels.map(p => [p.id, p.name])
-    const labelsTableHeader = ['ID', 'Name']
-    const tableData = [labelsTableHeader].concat(labelsInTableFormat)
-    table(tableData, { format: 'lean' })
+    let labelsInTableFormat = []
+    let labelsTableHeader = []
+
+    if (options.publisher) {
+      labelsInTableFormat = labels.map(p => [p.id, p.name])
+      labelsTableHeader = ['ID', 'Name']
+    } else {
+      labelsInTableFormat = labels.map(p => [p.id, p.publisher.name, p.name])
+      labelsTableHeader = ['ID', 'Publisher', 'Name']
+    }
+    table([labelsTableHeader].concat(labelsInTableFormat), { format: 'lean' })
   }
 }
