@@ -5,7 +5,7 @@ module.exports = toolbox => {
     // Part 1: generate the search indexing.
     const publishersForSearch = await toolbox.db.Publisher.findAll({
       attributes: ['id', 'name']
-    }).map(p => ({ ...p.dataValues, image: '' }))
+    }).map(p => p.dataValues)
     const searchFile = toolbox.filesystem.path(folder, 'list.json')
     await toolbox.filesystem.writeAsync(searchFile, publishersForSearch)
 
@@ -15,12 +15,12 @@ module.exports = toolbox => {
         {
           model: toolbox.db.Label,
           as: 'labels',
-          attributes: ['id', 'name', 'createdAt', 'updatedAt']
+          attributes: ['id', 'name', 'createdAt', 'updatedAt', 'logoUrl']
         }
       ]
     })
     const allPublishersPlain = allPublishers.map(p => ({
-      ...p.dataValues,
+      ...p.get({ plain: true }),
       labels: p.dataValues.labels.map(l => l.id)
     }))
     const completeFile = toolbox.filesystem.path(folder, 'all.json')
@@ -55,15 +55,24 @@ module.exports = toolbox => {
 
   toolbox.exportModels.label = async folder => {
     // Part 1: generate the full list.
-    const allLabels = await toolbox.db.Label.findAll().map(l => l.dataValues)
+    const allLabels = await toolbox.db.Label.findAll().map(l =>
+      l.get({ plain: true })
+    )
     const completeFile = toolbox.filesystem.path(folder, 'all.json')
     await toolbox.filesystem.writeAsync(completeFile, allLabels)
 
     // Part 2: generate individual files.
     const individualLabels = await toolbox.db.Label.findAll({
-      attributes: ['id', 'name', 'description', 'createdAt', 'updatedAt'],
+      attributes: [
+        'id',
+        'name',
+        'description',
+        'createdAt',
+        'updatedAt',
+        'logoUrl'
+      ],
       include: [{ model: toolbox.db.Publisher, as: 'publisher' }]
-    }).map(l => l.dataValues)
+    }).map(l => l.get({ plain: true }))
     for (const label of individualLabels) {
       const labelFile = toolbox.filesystem.path(folder, `${label.id}.json`)
       await toolbox.filesystem.writeAsync(labelFile, label)

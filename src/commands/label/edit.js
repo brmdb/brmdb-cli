@@ -6,7 +6,7 @@ module.exports = {
       print: { success },
       customAsk,
       fillPrompt,
-      db: { Publisher, Label, Action, logAction }
+      db: { Publisher, Label }
     } = toolbox
 
     const publishers = await Publisher.findAll({ order: [['name', 'ASC']] })
@@ -51,9 +51,8 @@ module.exports = {
     const filledPrompt = fillPrompt(prompt, label)
 
     const result = await customAsk(filledPrompt)
-    await Label.update(result, { where: { id: labelId } })
+    await label.update(result)
 
-    logAction('Label', label.id, Action.types.UPDATE)
     success(`Label '${result.name}' edited.`)
   }
 }

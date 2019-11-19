@@ -6,7 +6,7 @@ module.exports = {
       parameters: { options },
       print: { success, error },
       prompt: { confirm },
-      db: { Label, Action, logAction }
+      db: { Label }
     } = toolbox
 
     if (!options.id) {
@@ -29,8 +29,7 @@ module.exports = {
       (options.confirm === undefined || options.confirm) &&
       (await confirm('Are you sure?'))
     ) {
-      await Label.destroy({ where: { id: options.id } })
-      logAction('Label', options.id, Action.types.DELETE)
+      await label.destroy()
       success('Label removed with success.')
     }
   }

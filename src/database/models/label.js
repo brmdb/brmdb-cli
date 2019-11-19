@@ -1,5 +1,7 @@
 'use strict'
 
+const { dataUrl } = require('../../config/export')
+
 /** @typedef {import('sequelize/lib/sequelize')} Sequelize */
 /** @typedef {import('sequelize/lib/data-types')} DataTypes */
 
@@ -12,7 +14,13 @@ module.exports = (sequelize, DataTypes) => {
     'Label',
     {
       name: DataTypes.STRING,
-      description: DataTypes.STRING
+      description: DataTypes.STRING,
+      logoUrl: {
+        type: new DataTypes.VIRTUAL(DataTypes.STRING, ['id']),
+        get() {
+          return `${dataUrl}/labels/images/${this.id}.png`
+        }
+      }
     },
     {}
   )

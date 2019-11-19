@@ -6,7 +6,7 @@ module.exports = {
       print: { success },
       customAsk,
       fillPrompt,
-      db: { Publisher, Action, logAction }
+      db: { Publisher }
     } = toolbox
 
     const publishers = await Publisher.findAll({ order: [['name', 'ASC']] })
@@ -34,9 +34,8 @@ module.exports = {
     const filledPrompt = fillPrompt(prompt, publisher)
 
     const result = await customAsk(filledPrompt)
-    await Publisher.update(result, { where: { id: publisherToEdit } })
+    await publisher.update(result)
 
-    logAction('Publisher', publisher.id, Action.types.UPDATE)
     success(`Publisher '${result.name}' edited.`)
   }
 }

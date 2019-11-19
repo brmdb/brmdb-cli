@@ -1,5 +1,7 @@
 'use strict'
 
+const { dataUrl } = require('../../config/export')
+
 /** @typedef {import('sequelize/lib/sequelize')} Sequelize */
 /** @typedef {import('sequelize/lib/data-types')} DataTypes */
 
@@ -16,7 +18,13 @@ module.exports = (sequelize, DataTypes) => {
       site: DataTypes.STRING,
       facebook: DataTypes.STRING,
       twitter: DataTypes.STRING,
-      instagram: DataTypes.STRING
+      instagram: DataTypes.STRING,
+      logoUrl: {
+        type: DataTypes.VIRTUAL(DataTypes.STRING, ['id']),
+        get() {
+          return `${dataUrl}/publishers/images/${this.id}.png`
+        }
+      }
     },
     {}
   )

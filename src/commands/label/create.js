@@ -5,7 +5,7 @@ module.exports = {
     const {
       print: { success },
       customAsk,
-      db: { Publisher, Action, logAction }
+      db: { Publisher }
     } = toolbox
 
     const publishers = await Publisher.findAll({ order: [['name', 'ASC']] })
@@ -32,7 +32,6 @@ module.exports = {
     const result = await customAsk(prompt)
     const label = await publisher.createLabel(result)
 
-    logAction('Label', label.id, Action.types.CREATE)
     success(`Label '${label.name}' created with id ${label.id}.`)
   }
 }
