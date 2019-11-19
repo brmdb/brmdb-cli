@@ -13,6 +13,11 @@ module.exports = (sequelize, DataTypes) => {
   const Publisher = sequelize.define(
     'Publisher',
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+      },
       name: DataTypes.STRING,
       bio: DataTypes.TEXT,
       site: DataTypes.STRING,

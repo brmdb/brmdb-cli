@@ -14,11 +14,6 @@ module.exports = {
       return
     }
 
-    if (isNaN(parseInt(options.id, 10))) {
-      error('The id provided is not valid.')
-      return
-    }
-
     const publisher = await Publisher.findOne({ where: { id: options.id } })
     if (!publisher) {
       error(`A publisher with id ${options.id} does not exists.`)

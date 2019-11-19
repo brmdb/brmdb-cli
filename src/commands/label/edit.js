@@ -21,8 +21,7 @@ module.exports = {
         type: 'autocomplete',
         name: 'publisherId',
         message: 'What publisher does the label to edit belongs to?',
-        choices: publisherChoices,
-        result: a => parseInt(a)
+        choices: publisherChoices
       }
     ])
 
@@ -40,8 +39,7 @@ module.exports = {
         type: 'autocomplete',
         name: 'labelId',
         message: 'What label do you want to edit?',
-        choices: labelChoices,
-        result: a => parseInt(a)
+        choices: labelChoices
       }
     ])
 

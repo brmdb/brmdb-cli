@@ -14,11 +14,6 @@ module.exports = {
       return
     }
 
-    if (isNaN(parseInt(options.id, 10))) {
-      error('The id provided is not valid.')
-      return
-    }
-
     const label = await Label.findOne({ where: { id: options.id } })
     if (!label) {
       error(`A label with id ${options.id} does not exists.`)

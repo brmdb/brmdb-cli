@@ -11,8 +11,13 @@ module.exports = (sequelize, DataTypes) => {
   const Action = sequelize.define(
     'Action',
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+      },
       model: DataTypes.STRING,
-      referer: DataTypes.INTEGER,
+      referer: DataTypes.UUID,
       action: DataTypes.STRING,
       contributor: DataTypes.STRING
     },

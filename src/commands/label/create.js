@@ -20,8 +20,7 @@ module.exports = {
         type: 'autocomplete',
         name: 'publisherId',
         message: 'What publisher does this label belongs to?',
-        choices: publisherChoices,
-        result: a => parseInt(a)
+        choices: publisherChoices
       }
     ])
 

@@ -18,11 +18,10 @@ module.exports = {
 
     const { publisherToEdit } = await customAsk([
       {
-        type: 'select',
+        type: 'autocomplete',
         name: 'publisherToEdit',
         message: 'What publisher do you want to edit?',
-        choices: publisherChoices,
-        result: a => parseInt(a)
+        choices: publisherChoices
       }
     ])
 

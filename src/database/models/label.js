@@ -13,6 +13,11 @@ module.exports = (sequelize, DataTypes) => {
   const Label = sequelize.define(
     'Label',
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
+      },
       name: DataTypes.STRING,
       description: DataTypes.STRING,
       logoUrl: {
