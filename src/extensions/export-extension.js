@@ -27,7 +27,22 @@ module.exports = toolbox => {
     await toolbox.filesystem.writeAsync(completeFile, allPublishersPlain)
 
     // Part 3: generate individual files.
-    for (const publisher of allPublishers) {
+    const individualPublishers = await toolbox.db.Publisher.findAll({
+      include: [
+        {
+          model: toolbox.db.ExternalLink,
+          as: 'externalLinks',
+          attributes: ['name', 'type', 'url'],
+          through: { attributes: [] }
+        },
+        {
+          model: toolbox.db.Label,
+          as: 'labels',
+          attributes: ['id', 'name', 'createdAt', 'updatedAt', 'logoUrl']
+        }
+      ]
+    })
+    for (const publisher of individualPublishers) {
       const publisherFile = toolbox.filesystem.path(
         folder,
         `${publisher.id}.json`
@@ -71,7 +86,20 @@ module.exports = toolbox => {
         'updatedAt',
         'logoUrl'
       ],
-      include: [{ model: toolbox.db.Publisher, as: 'publisher' }]
+      include: [
+        {
+          model: toolbox.db.Publisher,
+          as: 'publisher',
+          include: [
+            {
+              model: toolbox.db.ExternalLink,
+              as: 'externalLinks',
+              attributes: ['name', 'type', 'url'],
+              through: { attributes: [] }
+            }
+          ]
+        }
+      ]
     }).map(l => l.get({ plain: true }))
     for (const label of individualLabels) {
       const labelFile = toolbox.filesystem.path(folder, `${label.id}.json`)
@@ -93,6 +121,7 @@ module.exports = toolbox => {
         {
           model: toolbox.db.ExternalLink,
           as: 'externalLinks',
+          attributes: ['name', 'type', 'url'],
           through: { attributes: [] }
         }
       ]

@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true
       },
       name: DataTypes.STRING,
-      type: DataTypes.ENUM('SOCIAL', 'DATABASE', 'INFORMATION'),
+      type: DataTypes.ENUM('SOCIAL', 'DATABASE', 'INFORMATION', 'STORE'),
       url: DataTypes.STRING
     },
     {}
@@ -29,6 +29,13 @@ module.exports = (sequelize, DataTypes) => {
       as: 'people',
       foreignKey: 'externalLinkId',
       otherKey: 'personId'
+    })
+
+    ExternalLink.belongsToMany(models.Publisher, {
+      through: 'PublisherExternalLinks',
+      as: 'publishers',
+      foreignKey: 'externalLinkId',
+      otherKey: 'publisherId'
     })
   }
 

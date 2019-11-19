@@ -21,9 +21,6 @@ module.exports = (sequelize, DataTypes) => {
       name: DataTypes.STRING,
       bio: DataTypes.TEXT,
       site: DataTypes.STRING,
-      facebook: DataTypes.STRING,
-      twitter: DataTypes.STRING,
-      instagram: DataTypes.STRING,
       logoUrl: {
         type: DataTypes.VIRTUAL(DataTypes.STRING, ['id']),
         get() {
@@ -36,6 +33,13 @@ module.exports = (sequelize, DataTypes) => {
 
   Publisher.associate = function(models) {
     Publisher.hasMany(models.Label, { as: 'labels', foreignKey: 'publisherId' })
+
+    Publisher.belongsToMany(models.ExternalLink, {
+      through: 'PublisherExternalLinks',
+      as: 'externalLinks',
+      foreignKey: 'publisherId',
+      otherKey: 'externalLinkId'
+    })
   }
 
   return Publisher

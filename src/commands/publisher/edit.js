@@ -3,10 +3,10 @@ module.exports = {
   description: 'Edit a existing publisher in the database',
   run: async toolbox => {
     const {
-      print: { success },
+      print: { success, error },
       customAsk,
       fillPrompt,
-      db: { Publisher }
+      db: { Publisher, ExternalLink }
     } = toolbox
 
     const publishers = await Publisher.findAll({ order: [['name', 'ASC']] })
@@ -26,15 +26,85 @@ module.exports = {
     ])
 
     const publisher = await Publisher.findOne({
+      include: [{ model: ExternalLink, as: 'externalLinks' }],
       where: { id: publisherToEdit }
     })
 
-    const prompt = require('../../prompts/publisher')
-    const filledPrompt = fillPrompt(prompt, publisher)
+    const publisherPrompt = require('../../prompts/publisher')
+    const filledPrompt = fillPrompt(publisherPrompt, publisher)
 
-    const result = await customAsk(filledPrompt)
-    await publisher.update(result)
+    const publisherResult = await customAsk(filledPrompt)
+    await publisher.update(publisherResult)
 
-    success(`Publisher '${result.name}' edited.`)
+    const { linkOption } = await customAsk([
+      {
+        type: 'select',
+        name: 'linkOption',
+        message: 'What you want to do about the external links?',
+        choices: [
+          { name: 'ADD_NEW', message: 'Add new ones', value: '0' },
+          { name: 'REMOVE_EXISTING', message: 'Remove existing', value: '1' },
+          { name: 'NOTHING', message: 'Nothing', value: '2' }
+        ]
+      }
+    ])
+
+    if (linkOption === 'NOTHING') return
+
+    if (linkOption === 'ADD_NEW') {
+      const linkPrompt = require('../../prompts/externalLink')
+      linkPrompt.push({
+        type: 'toggle',
+        name: 'addMore',
+        message: 'Do you want to add another external link?',
+        enabled: 'Yes',
+        disabled: 'No',
+        initial: true
+      })
+
+      let linkResult = { addMore: true }
+      const linksToAdd = []
+
+      while (linkResult.addMore) {
+        linkResult = await customAsk(linkPrompt)
+        linksToAdd.push({
+          name: linkResult.name,
+          type: linkResult.type,
+          url: linkResult.url
+        })
+      }
+
+      for (const linkObj of linksToAdd) {
+        const link = await ExternalLink.create(linkObj)
+        publisher.addExternalLink(link)
+      }
+    } else {
+      const linkChoices = publisher.externalLinks.map(e => ({
+        name: e.id.toString(),
+        message: e.name,
+        value: e.id.toString()
+      }))
+
+      if (linkChoices.length === 0) {
+        error('The publisher has no links associated.')
+        return
+      }
+
+      const { linksToRemove } = await customAsk([
+        {
+          type: 'multiselect',
+          name: 'linksToRemove',
+          message: 'Select the links to remove',
+          choices: linkChoices
+        }
+      ])
+
+      for (const linkId of linksToRemove) {
+        const link = await ExternalLink.findByPk(linkId)
+        await link.destroy()
+      }
+    }
+
+    success(`Publisher '${publisher.name}' edited.`)
   }
 }
