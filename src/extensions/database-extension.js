@@ -48,7 +48,6 @@ module.exports = async toolbox => {
     if (modelName !== 'Action') {
       hooks.forEach(h => {
         toolbox.db[modelName][h.hook]((obj, options) => {
-          console.log(`logAction(${modelName}, ${obj.id}, ${h.type})`)
           logAction(modelName, obj.id, h.type)
         })
       })
