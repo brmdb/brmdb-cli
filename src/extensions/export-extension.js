@@ -78,4 +78,28 @@ module.exports = toolbox => {
       await toolbox.filesystem.writeAsync(labelFile, label)
     }
   }
+
+  toolbox.exportModels.person = async folder => {
+    // Part 1: generate the full list.
+    const allPeople = await toolbox.db.Person.findAll().map(l =>
+      l.get({ plain: true })
+    )
+    const completeFile = toolbox.filesystem.path(folder, 'all.json')
+    await toolbox.filesystem.writeAsync(completeFile, allPeople)
+
+    // Part 2: generate individual files.
+    const individualPerson = await toolbox.db.Person.findAll({
+      include: [
+        {
+          model: toolbox.db.ExternalLink,
+          as: 'externalLinks',
+          through: { attributes: [] }
+        }
+      ]
+    }).map(l => l.get({ plain: true }))
+    for (const person of individualPerson) {
+      const personFile = toolbox.filesystem.path(folder, `${person.id}.json`)
+      await toolbox.filesystem.writeAsync(personFile, person)
+    }
+  }
 }
