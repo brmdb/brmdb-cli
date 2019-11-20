@@ -16,6 +16,7 @@ module.exports = {
     await exportModels.action(filesystem.path(outputFolder, 'actions'))
     await exportModels.label(filesystem.path(outputFolder, 'labels'))
     await exportModels.person(filesystem.path(outputFolder, 'people'))
+    await exportModels.serie(filesystem.path(outputFolder, 'series'))
     success('Database exported with success.')
   }
 }

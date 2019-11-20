@@ -26,6 +26,8 @@
     "enquirer": "^2.3.2",
     "enquirer-prompt-editor": "^2.0.1",
     "gluegun": "^2.1.0",
+    "lodash.flatmap": "^4.5.0",
+    "lodash.sortby": "^4.7.0",
     "prompt-editor": "^0.1.0",
     "sequelize": "^5.21.2",
     "sqlite3": "^4.1.0",

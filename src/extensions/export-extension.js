@@ -1,4 +1,7 @@
 module.exports = toolbox => {
+  const flatMap = require('lodash.flatmap')
+  const sortBy = require('lodash.sortby')
+
   toolbox.exportModels = {}
 
   toolbox.exportModels.publisher = async folder => {
@@ -129,6 +132,65 @@ module.exports = toolbox => {
     for (const person of individualPerson) {
       const personFile = toolbox.filesystem.path(folder, `${person.id}.json`)
       await toolbox.filesystem.writeAsync(personFile, person)
+    }
+  }
+
+  toolbox.exportModels.serie = async folder => {
+    // Part 1: generate the search indexing.
+    let seriesForSearch = await toolbox.db.Serie.findAll({
+      attributes: ['id', 'title', 'alternativeTitles']
+    })
+    seriesForSearch = flatMap(seriesForSearch, p =>
+      [{ id: p.id, title: p.title }].concat(
+        p.synonyms.map(s => ({ id: p.id, title: s }))
+      )
+    )
+    seriesForSearch = sortBy(seriesForSearch, ['title'])
+    const searchFile = toolbox.filesystem.path(folder, 'list.json')
+    await toolbox.filesystem.writeAsync(searchFile, seriesForSearch)
+
+    // Part 2: generate the full list.
+    const allSeries = await toolbox.db.Serie.findAll({
+      attributes: { exclude: ['synonyms', 'genresArray'] }
+    }).map(l => ({
+      ...l.dataValues,
+      alternativeTitles: l.get('synonyms'),
+      genres: l.get('genresArray')
+    }))
+    const completeFile = toolbox.filesystem.path(folder, 'all.json')
+    await toolbox.filesystem.writeAsync(completeFile, allSeries)
+
+    // Part 3: generate individual files.
+    const individualSeries = await toolbox.db.Serie.findAll({
+      attributes: { exclude: ['synonyms', 'genresArray'] },
+      include: [
+        {
+          model: toolbox.db.ExternalLink,
+          as: 'externalLinks',
+          attributes: ['name', 'type', 'url'],
+          through: { attributes: [] }
+        },
+        {
+          model: toolbox.db.SeriePerson,
+          as: 'creators',
+          attributes: ['role'],
+          include: [
+            {
+              model: toolbox.db.Person,
+              as: 'person',
+              attributes: ['id', 'name']
+            }
+          ]
+        }
+      ]
+    }).map(l => ({
+      ...l.dataValues,
+      alternativeTitles: l.get('synonyms'),
+      genres: l.get('genresArray')
+    }))
+    for (const serie of individualSeries) {
+      const serieFile = toolbox.filesystem.path(folder, `${serie.id}.json`)
+      await toolbox.filesystem.writeAsync(serieFile, serie)
     }
   }
 }
