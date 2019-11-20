@@ -5,7 +5,13 @@ module.exports = {
     const {
       print: { success },
       customAsk,
-      db: { ExternalLink, Person, Serie, SeriePerson }
+      db: { ExternalLink, Serie, SeriePerson },
+      customPrompt: {
+        askToAddExternalLinks,
+        askToAddCreators,
+        promptForExternalLinks,
+        promptForCreators
+      }
     } = toolbox
 
     const seriePrompt = require('../../prompts/serie')
@@ -17,39 +23,10 @@ module.exports = {
       genres: JSON.stringify(result.genresArray)
     })
 
-    const { addLinks } = await customAsk([
-      {
-        type: 'toggle',
-        name: 'addLinks',
-        message: 'Do you want to add external links?',
-        enabled: 'Yes',
-        disabled: 'No',
-        initial: true
-      }
-    ])
+    const addLinks = await askToAddExternalLinks()
 
     if (addLinks) {
-      const linkPrompt = require('../../prompts/externalLink')
-      linkPrompt.push({
-        type: 'toggle',
-        name: 'addMore',
-        message: 'Do you want to add another external link?',
-        enabled: 'Yes',
-        disabled: 'No',
-        initial: true
-      })
-
-      let linkResult = { addMore: true }
-      const linksToAdd = []
-
-      while (linkResult.addMore) {
-        linkResult = await customAsk(linkPrompt)
-        linksToAdd.push({
-          name: linkResult.name,
-          type: linkResult.type,
-          url: linkResult.url
-        })
-      }
+      const linksToAdd = await promptForExternalLinks()
 
       for (const linkObj of linksToAdd) {
         const link = await ExternalLink.create(linkObj)
@@ -57,40 +34,10 @@ module.exports = {
       }
     }
 
-    const { addCreators } = await customAsk([
-      {
-        type: 'toggle',
-        name: 'addCreators',
-        message: 'Do you want to add creators?',
-        enabled: 'Yes',
-        disabled: 'No',
-        initial: true
-      }
-    ])
+    const addCreators = await askToAddCreators()
 
     if (addCreators) {
-      const people = await Person.findAll()
-      const creatorPrompt = require('../../prompts/creator')(people)
-      creatorPrompt.push({
-        type: 'toggle',
-        name: 'addMore',
-        message: 'Do you want to add another creator?',
-        enabled: 'Yes',
-        disabled: 'No',
-        initial: true
-      })
-
-      let creatorResult = { addMore: true }
-      const creatorsToAdd = []
-
-      while (creatorResult.addMore) {
-        creatorResult = await customAsk(creatorPrompt)
-        creatorsToAdd.push({
-          serieId: serie.id,
-          personId: creatorResult.personId,
-          role: creatorResult.role
-        })
-      }
+      const creatorsToAdd = await promptForCreators()
 
       for (const creatorObj of creatorsToAdd) {
         await SeriePerson.create(creatorObj)

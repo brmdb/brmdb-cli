@@ -5,25 +5,20 @@ module.exports = {
     const {
       print: { error, success },
       customAsk,
-      fillPrompt,
-      db: { ExternalLink, Person, Serie, SeriePerson }
+      db: { ExternalLink, Person, Serie, SeriePerson },
+      customPrompt: {
+        fillPrompt,
+        selectSerieToEdit,
+        askWhatToDoWithExternalLinks,
+        askWhatToDoWithCreators,
+        promptForExternalLinks,
+        promptForCreators,
+        selectLinksToRemove,
+        selectCreatorsToRemove
+      }
     } = toolbox
 
-    const series = await Serie.findAll({ order: [['title', 'ASC']] })
-    const seriesCoices = series.map(p => ({
-      name: p.title,
-      message: p.title,
-      value: p.id.toString()
-    }))
-
-    const { serieToEdit } = await customAsk([
-      {
-        type: 'autocomplete',
-        name: 'serieToEdit',
-        message: 'What serie do you want to edit?',
-        choices: seriesCoices
-      }
-    ])
+    const serieToEdit = await selectSerieToEdit()
 
     const serie = await Serie.findOne({
       include: [
@@ -47,140 +42,49 @@ module.exports = {
       genres: JSON.stringify(serieResult.genresArray)
     })
 
-    const { linkOption } = await customAsk([
-      {
-        type: 'select',
-        name: 'linkOption',
-        message: 'What you want to do about the external links?',
-        choices: [
-          { name: 'ADD_NEW', message: 'Add new ones', value: '0' },
-          { name: 'REMOVE_EXISTING', message: 'Remove existing', value: '1' },
-          { name: 'NOTHING', message: 'Nothing', value: '2' }
-        ]
-      }
-    ])
+    const linkOption = await askWhatToDoWithExternalLinks()
 
     if (linkOption !== 'NOTHING') {
       if (linkOption === 'ADD_NEW') {
-        const linkPrompt = require('../../prompts/externalLink')
-        linkPrompt.push({
-          type: 'toggle',
-          name: 'addMore',
-          message: 'Do you want to add another external link?',
-          enabled: 'Yes',
-          disabled: 'No',
-          initial: true
-        })
-
-        let linkResult = { addMore: true }
-        const linksToAdd = []
-
-        while (linkResult.addMore) {
-          linkResult = await customAsk(linkPrompt)
-          linksToAdd.push({
-            name: linkResult.name,
-            type: linkResult.type,
-            url: linkResult.url
-          })
-        }
+        const linksToAdd = await promptForExternalLinks()
 
         for (const linkObj of linksToAdd) {
           const link = await ExternalLink.create(linkObj)
           serie.addExternalLink(link)
         }
       } else {
-        const linkChoices = serie.externalLinks.map(e => ({
-          name: e.id.toString(),
-          message: e.name,
-          value: e.id.toString()
-        }))
+        if (serie.externalLinks.length > 0) {
+          const linksToRemove = await selectLinksToRemove(serie.externalLinks)
 
-        if (linkChoices.length === 0) {
-          error('The serie has no links associated.')
-          return
-        }
-
-        const { linksToRemove } = await customAsk([
-          {
-            type: 'multiselect',
-            name: 'linksToRemove',
-            message: 'Select the links to remove',
-            choices: linkChoices
+          for (const linkId of linksToRemove) {
+            const link = await ExternalLink.findByPk(linkId)
+            await link.destroy()
           }
-        ])
-
-        for (const linkId of linksToRemove) {
-          const link = await ExternalLink.findByPk(linkId)
-          await link.destroy()
+        } else {
+          error('The serie has no links associated.')
         }
       }
     }
 
-    const { creatorOption } = await customAsk([
-      {
-        type: 'select',
-        name: 'creatorOption',
-        message: 'What you want to do about the creators?',
-        choices: [
-          { name: 'ADD_NEW', message: 'Add new ones', value: '0' },
-          { name: 'REMOVE_EXISTING', message: 'Remove existing', value: '1' },
-          { name: 'NOTHING', message: 'Nothing', value: '2' }
-        ]
-      }
-    ])
+    const creatorOption = await askWhatToDoWithCreators()
 
     if (creatorOption !== 'NOTHING') {
       if (creatorOption === 'ADD_NEW') {
-        const allPeople = await Person.findAll()
-        const creatorPrompt = require('../../prompts/creator')(allPeople)
-        creatorPrompt.push({
-          type: 'toggle',
-          name: 'addMore',
-          message: 'Do you want to add another creator?',
-          enabled: 'Yes',
-          disabled: 'No',
-          initial: true
-        })
-
-        let creatorResult = { addMore: true }
-        const creatorsToAdd = []
-
-        while (creatorResult.addMore) {
-          creatorResult = await customAsk(creatorPrompt)
-          creatorsToAdd.push({
-            serieId: serie.id,
-            personId: creatorResult.personId,
-            role: creatorResult.role
-          })
-        }
+        const creatorsToAdd = await promptForCreators()
 
         for (const creatorObj of creatorsToAdd) {
           await SeriePerson.create(creatorObj)
         }
       } else {
-        const creatorChoices = serie.creators.map(e => ({
-          name: e.id.toString(),
-          message: `${e.person.name} (${e.role})`,
-          value: e.id.toString()
-        }))
+        if (serie.creators.length > 0) {
+          const creatorsToRemove = await selectCreatorsToRemove(serie.creators)
 
-        if (creatorChoices.length === 0) {
-          error('The serie has no creators associated.')
-          return
-        }
-
-        const { creatorsToRemove } = await customAsk([
-          {
-            type: 'multiselect',
-            name: 'creatorsToRemove',
-            message: 'Select the creators to remove',
-            choices: creatorChoices
+          for (const creatorId of creatorsToRemove) {
+            const creator = await SeriePerson.findByPk(creatorId)
+            await creator.destroy()
           }
-        ])
-
-        for (const creatorId of creatorsToRemove) {
-          const creator = await SeriePerson.findByPk(creatorId)
-          await creator.destroy()
+        } else {
+          error('The serie has no creators associated.')
         }
       }
     }

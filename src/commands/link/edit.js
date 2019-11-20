@@ -6,8 +6,8 @@ module.exports = {
       parameters: { options },
       print: { success, error },
       customAsk,
-      fillPrompt,
-      db: { ExternalLink }
+      db: { ExternalLink },
+      customAsk: { fillPrompt }
     } = toolbox
 
     if (!options.id) {

@@ -5,43 +5,11 @@ module.exports = {
     const {
       print: { success },
       customAsk,
-      fillPrompt,
-      db: { Publisher, Label }
+      db: { Label },
+      customPrompt: { fillPrompt, selectLabelToEdit }
     } = toolbox
 
-    const publishers = await Publisher.findAll({ order: [['name', 'ASC']] })
-    const publisherChoices = publishers.map(p => ({
-      name: p.id.toString(),
-      message: p.name,
-      value: p.id.toString()
-    }))
-
-    const { publisherId } = await customAsk([
-      {
-        type: 'autocomplete',
-        name: 'publisherId',
-        message: 'What publisher does the label to edit belongs to?',
-        choices: publisherChoices
-      }
-    ])
-
-    const publisher = await Publisher.findOne({ where: { id: publisherId } })
-
-    const labels = await publisher.getLabels()
-    const labelChoices = labels.map(l => ({
-      name: l.id.toString(),
-      message: l.name,
-      value: l.id.toString()
-    }))
-
-    const { labelId } = await customAsk([
-      {
-        type: 'autocomplete',
-        name: 'labelId',
-        message: 'What label do you want to edit?',
-        choices: labelChoices
-      }
-    ])
+    const labelId = await selectLabelToEdit()
 
     const label = await Label.findOne({ where: { id: labelId } })
 
@@ -51,6 +19,6 @@ module.exports = {
     const result = await customAsk(filledPrompt)
     await label.update(result)
 
-    success(`Label '${result.name}' edited.`)
+    success(`Label '${label.name}' edited.`)
   }
 }
