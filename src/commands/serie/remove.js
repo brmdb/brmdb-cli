@@ -3,25 +3,26 @@ module.exports = {
   description: 'Remove the serie from the database',
   run: async toolbox => {
     const {
-      parameters: { options },
+      parameters,
       print: { success, error },
       prompt: { confirm },
       db: { Serie }
     } = toolbox
 
-    if (!options.id) {
-      error('You need to specify an id with the --id option.')
+    if (!parameters.first) {
+      error('You need to specify an id')
       return
     }
 
-    const serie = await Serie.findOne({ where: { id: options.id } })
+    const serie = await Serie.findOne({ where: { id: parameters.first } })
     if (!serie) {
-      error(`A serie with id ${options.id} does not exists.`)
+      error(`A serie with id ${parameters.first} does not exists.`)
       return
     }
 
     if (
-      (options.confirm === undefined || options.confirm) &&
+      (parameters.options.confirm === undefined ||
+        parameters.options.confirm) &&
       (await confirm('Are you sure?'))
     ) {
       await serie.destroy()

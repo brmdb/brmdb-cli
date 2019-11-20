@@ -1,5 +1,7 @@
 'use strict'
 
+const { dataUrl } = require('../../config/export')
+
 /** @typedef {import('sequelize/lib/sequelize')} Sequelize */
 /** @typedef {import('sequelize/lib/data-types')} DataTypes */
 
@@ -61,6 +63,18 @@ module.exports = (sequelize, DataTypes) => {
           this.setDataValue('genresArray', val)
           this.setDataValue('genres', JSON.stringify(val))
         }
+      },
+      coverUrl: {
+        type: DataTypes.VIRTUAL(DataTypes.STRING, ['id']),
+        get() {
+          return `${dataUrl}/series/images/cover/${this.id}.png`
+        }
+      },
+      posterUrl: {
+        type: DataTypes.VIRTUAL(DataTypes.STRING, ['id']),
+        get() {
+          return `${dataUrl}/series/images/poster/${this.id}.png`
+        }
       }
     },
     {}
@@ -74,12 +88,8 @@ module.exports = (sequelize, DataTypes) => {
       otherKey: 'externalLinkId'
     })
 
-    // Serie.belongsToMany(models.Person, {
-    //   through: models.SeriePerson,
-    //   as: 'creators',
-    //   foreignKey: 'serieId'
-    // })
     Serie.hasMany(models.SeriePerson, { foreignKey: 'serieId', as: 'creators' })
+    Serie.hasMany(models.Edition, { foreignKey: 'serieId', as: 'editions' })
   }
 
   return Serie

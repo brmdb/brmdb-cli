@@ -1,22 +1,22 @@
 module.exports = {
   name: 'remove',
-  description: 'Remove the label from the database',
+  description: 'Remove the edition from the database',
   run: async toolbox => {
     const {
       parameters,
       print: { success, error },
       prompt: { confirm },
-      db: { Label }
+      db: { Edition }
     } = toolbox
 
     if (!parameters.first) {
-      error('You need to specify an id')
+      error('You need to specify an id.')
       return
     }
 
-    const label = await Label.findOne({ where: { id: parameters.first } })
-    if (!label) {
-      error(`A label with id ${parameters.first} does not exists.`)
+    const edition = await Edition.findOne({ where: { id: parameters.first } })
+    if (!edition) {
+      error(`A edition with id ${parameters.first} does not exists.`)
       return
     }
 
@@ -25,8 +25,8 @@ module.exports = {
         parameters.options.confirm) &&
       (await confirm('Are you sure?'))
     ) {
-      await label.destroy()
-      success('Label removed with success.')
+      await edition.destroy()
+      success('Edition removed with success.')
     }
   }
 }

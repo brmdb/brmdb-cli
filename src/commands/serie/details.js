@@ -3,12 +3,20 @@ module.exports = {
   description: 'Show the details from a serie in the database',
   run: async toolbox => {
     const {
-      parameters: { options },
-      print: { table, error, info },
-      db: { ExternalLink, Serie, SeriePerson, Person }
+      parameters,
+      print: { tabulateInstance, listInstances, error },
+      db: {
+        Edition,
+        ExternalLink,
+        Label,
+        Serie,
+        SeriePerson,
+        Person,
+        Publisher
+      }
     } = toolbox
 
-    if (!options.id) {
+    if (!parameters.first) {
       error('You need to specify an id with the --id option.')
       return
     }
@@ -20,44 +28,50 @@ module.exports = {
           model: SeriePerson,
           as: 'creators',
           include: [{ model: Person, as: 'person' }]
+        },
+        {
+          model: Edition,
+          as: 'editions',
+          include: [
+            {
+              model: Label,
+              as: 'label',
+              include: [{ model: Publisher, as: 'publisher' }]
+            }
+          ]
         }
       ],
-      where: { id: options.id }
+      where: { id: parameters.first }
     })
     if (!serie) {
-      error(`A serie with id ${options.id} does not exists.`)
+      error(`A serie with id ${parameters.first} does not exists.`)
       return
     }
 
-    const tableHeader = ['Attribute', 'Value']
-    const tableData = Object.entries(serie.dataValues).filter(
-      ([k, v]) => typeof v !== 'object' && k !== 'synopsis'
-    )
-    table([tableHeader].concat(tableData), { format: 'lean' })
+    tabulateInstance(serie, ['synopsis'])
 
-    if (serie.externalLinks.length === 0) {
-      info('The serie has no links associated.')
-    } else {
-      const linksInTableFormat = serie.externalLinks.map(p => [
-        p.id,
-        p.name,
-        p.type,
-        p.url
-      ])
-      const tableHeader = ['ID', 'Name', 'Type', 'URL']
-      table([tableHeader].concat(linksInTableFormat), { format: 'lean' })
+    if (serie.externalLinks.length) {
+      listInstances(
+        serie.externalLinks,
+        ['id', 'name', 'type', 'url'],
+        [38, 22, 14, 30]
+      )
     }
 
-    if (serie.creators.length === 0) {
-      info('The serie has no creators associated.')
-    } else {
-      const creatorsInTableFormat = serie.creators.map(c => [
-        c.id,
-        c.person.name,
-        c.role
+    if (serie.creators.length) {
+      listInstances(serie.creators, ['id', 'person.name', 'role'])
+    }
+
+    if (serie.editions.length) {
+      listInstances(serie.editions, [
+        'id',
+        { path: 'label.publisher.name', head: 'Publisher' },
+        { path: 'label.name', head: 'Label' },
+        'name',
+        'type',
+        'status',
+        'period'
       ])
-      const tableHeader = ['ID', 'Person', 'Role']
-      table([tableHeader].concat(creatorsInTableFormat), { format: 'lean' })
     }
   }
 }

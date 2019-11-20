@@ -3,13 +3,13 @@ module.exports = {
   description: 'Show the details from a publisher in the database',
   run: async toolbox => {
     const {
-      parameters: { options },
-      print: { table, error, info },
+      parameters,
+      print: { tabulateInstance, listInstances, error },
       db: { ExternalLink, Publisher, Label }
     } = toolbox
 
-    if (!options.id) {
-      error('You need to specify an id with the --id option.')
+    if (!parameters.first) {
+      error('You need to specify an id.')
       return
     }
 
@@ -18,38 +18,25 @@ module.exports = {
         { model: ExternalLink, as: 'externalLinks' },
         { model: Label, as: 'labels' }
       ],
-      where: { id: options.id }
+      where: { id: parameters.first }
     })
     if (!publisher) {
-      error(`A publisher with id ${options.id} does not exists.`)
+      error(`A publisher with id ${parameters.first} does not exists.`)
       return
     }
 
-    const tableHeader = ['Attribute', 'Value']
-    const tableData = Object.entries(publisher.dataValues).filter(
-      ([k, v]) => typeof v !== 'object' && k !== 'bio'
-    )
-    table([tableHeader].concat(tableData), { format: 'lean' })
+    tabulateInstance(publisher, ['bio'])
 
-    if (publisher.externalLinks.length === 0) {
-      info('The publisher has no links associated.')
-    } else {
-      const linksInTableFormat = publisher.externalLinks.map(p => [
-        p.id,
-        p.name,
-        p.type,
-        p.url
-      ])
-      const tableHeader = ['ID', 'Name', 'Type', 'URL']
-      table([tableHeader].concat(linksInTableFormat), { format: 'lean' })
+    if (publisher.externalLinks.length) {
+      listInstances(
+        publisher.externalLinks,
+        ['id', 'name', 'type', 'url'],
+        [38, 22, 14, 30]
+      )
     }
 
-    if (publisher.labels.length === 0) {
-      info('The publisher has no labels.')
-    } else {
-      const labelsInTableFormat = publisher.labels.map(l => [l.id, l.name])
-      const tableHeader = ['ID', 'Name']
-      table([tableHeader].concat(labelsInTableFormat), { format: 'lean' })
+    if (publisher.labels.length) {
+      listInstances(publisher.labels, ['id', 'name'])
     }
   }
 }

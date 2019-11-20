@@ -3,7 +3,7 @@ module.exports = {
   description: 'List the series in the database',
   run: async toolbox => {
     const {
-      print: { info, table },
+      print: { info, listInstances },
       db: { Serie }
     } = toolbox
 
@@ -14,14 +14,6 @@ module.exports = {
       return
     }
 
-    const seriesInTableFormat = series.map(s => [
-      s.id,
-      s.title,
-      s.status,
-      s.type,
-      s.demografy
-    ])
-    const tableHeader = ['ID', 'Title', 'Status', 'Type', 'Demografy']
-    table([tableHeader].concat(seriesInTableFormat), { format: 'lean' })
+    listInstances(series, ['id', 'title', 'status', 'type', 'demografy'])
   }
 }

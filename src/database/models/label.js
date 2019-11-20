@@ -32,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
 
   Label.associate = function(models) {
     Label.belongsTo(models.Publisher, { as: 'publisher' })
+    Label.hasMany(models.Edition, {
+      as: 'editionsReleased',
+      foreignKey: 'labelId'
+    })
   }
 
   return Label

@@ -16,7 +16,8 @@ module.exports = [
         message: 'General information',
         value: 'INFORMATION'
       },
-      { name: 'STORE', message: 'Store', value: 'STORE' }
+      { name: 'STORE', message: 'Store', value: 'STORE' },
+      { name: 'VIDEO', message: 'Video', value: 'VIDEO' }
     ]
   },
   {

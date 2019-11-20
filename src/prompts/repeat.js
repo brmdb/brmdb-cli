@@ -1,10 +1,10 @@
-const prompt = {
+const prompt = model => ({
   type: 'toggle',
   name: 'addMore',
-  message: 'Do you want to add another creator?',
+  message: `Do you want to add another ${model}?`,
   enabled: 'Yes',
   disabled: 'No',
   initial: true
-}
+})
 
-module.exports = questions => questions.concat([prompt])
+module.exports = (model, questions) => questions.concat([prompt(model)])

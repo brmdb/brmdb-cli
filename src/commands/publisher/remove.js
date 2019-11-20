@@ -3,25 +3,28 @@ module.exports = {
   description: 'Remove the publisher from the database',
   run: async toolbox => {
     const {
-      parameters: { options },
+      parameters,
       print: { success, error },
       prompt: { confirm },
       db: { Publisher }
     } = toolbox
 
-    if (!options.id) {
-      error('You need to specify an id with the --id option.')
+    if (!parameters.first) {
+      error('You need to specify an id')
       return
     }
 
-    const publisher = await Publisher.findOne({ where: { id: options.id } })
+    const publisher = await Publisher.findOne({
+      where: { id: parameters.first }
+    })
     if (!publisher) {
-      error(`A publisher with id ${options.id} does not exists.`)
+      error(`A publisher with id ${parameters.first} does not exists.`)
       return
     }
 
     if (
-      (options.confirm === undefined || options.confirm) &&
+      (parameters.options.confirm === undefined ||
+        parameters.options.confirm) &&
       (await confirm('Are you sure?'))
     ) {
       await publisher.destroy()

@@ -5,18 +5,21 @@ module.exports = {
     const {
       print: { success },
       filesystem,
-      exportModels
+      exportData
     } = toolbox
 
     const outputFolder = filesystem.path('public')
     filesystem.remove(outputFolder)
     filesystem.dir(outputFolder)
 
-    await exportModels.publisher(filesystem.path(outputFolder, 'publishers'))
-    await exportModels.action(filesystem.path(outputFolder, 'actions'))
-    await exportModels.label(filesystem.path(outputFolder, 'labels'))
-    await exportModels.person(filesystem.path(outputFolder, 'people'))
-    await exportModels.serie(filesystem.path(outputFolder, 'series'))
+    await exportData(outputFolder, [
+      'Publisher',
+      'Label',
+      'Serie',
+      'Edition',
+      'Person',
+      'Action'
+    ])
     success('Database exported with success.')
   }
 }

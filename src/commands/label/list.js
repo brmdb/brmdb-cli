@@ -4,7 +4,7 @@ module.exports = {
   run: async toolbox => {
     const {
       parameters: { options },
-      print: { info, error, table },
+      print: { info, error, listInstances },
       db: { Label, Publisher }
     } = toolbox
 
@@ -31,16 +31,14 @@ module.exports = {
       return
     }
 
-    let labelsInTableFormat = []
-    let labelsTableHeader = []
-
     if (options.publisher) {
-      labelsInTableFormat = labels.map(p => [p.id, p.name])
-      labelsTableHeader = ['ID', 'Name']
+      listInstances(labels, ['id', 'name'])
     } else {
-      labelsInTableFormat = labels.map(p => [p.id, p.publisher.name, p.name])
-      labelsTableHeader = ['ID', 'Publisher', 'Name']
+      listInstances(labels, [
+        'id',
+        { path: 'publisher.name', head: 'Publisher' },
+        'name'
+      ])
     }
-    table([labelsTableHeader].concat(labelsInTableFormat), { format: 'lean' })
   }
 }

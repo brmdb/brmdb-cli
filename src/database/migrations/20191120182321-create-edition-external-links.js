@@ -8,31 +8,27 @@ module.exports = {
    * @param {QueryInterface} queryInterface
    * @param {DataTypes} Sequelize
    */
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('ExternalLinks', {
-      id: {
-        allowNull: false,
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('EditionExternalLinks', {
+      editionId: {
         type: Sequelize.UUID,
-        primaryKey: true,
-        defaultValue: Sequelize.UUIDV4
-      },
-      name: {
         allowNull: false,
-        type: Sequelize.STRING
+        references: {
+          model: 'Editions',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        primaryKey: true
       },
-      type: {
+      externalLinkId: {
+        type: Sequelize.UUID,
         allowNull: false,
-        type: Sequelize.ENUM(
-          'SOCIAL',
-          'DATABASE',
-          'INFORMATION',
-          'STORE',
-          'VIDEO'
-        )
-      },
-      url: {
-        allowNull: false,
-        type: Sequelize.STRING
+        references: {
+          model: 'ExternalLinks',
+          key: 'id'
+        },
+        onDelete: 'CASCADE',
+        primaryKey: true
       },
       createdAt: {
         allowNull: false,
@@ -50,6 +46,6 @@ module.exports = {
    * @param {DataTypes} Sequelize
    */
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('ExternalLinks')
+    return queryInterface.dropTable('EditionExternalLinks')
   }
 }

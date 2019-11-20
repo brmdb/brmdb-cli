@@ -3,25 +3,26 @@ module.exports = {
   description: 'Remove the person from the database',
   run: async toolbox => {
     const {
-      parameters: { options },
+      parameters,
       print: { success, error },
       prompt: { confirm },
       db: { Person }
     } = toolbox
 
-    if (!options.id) {
-      error('You need to specify an id with the --id option.')
+    if (!parameters.first) {
+      error('You need to specify an id')
       return
     }
 
-    const person = await Person.findOne({ where: { id: options.id } })
+    const person = await Person.findOne({ where: { id: parameters.first } })
     if (!person) {
-      error(`A person with id ${options.id} does not exists.`)
+      error(`A person with id ${parameters.first} does not exists.`)
       return
     }
 
     if (
-      (options.confirm === undefined || options.confirm) &&
+      (parameters.options.confirm === undefined ||
+        parameters.options.confirm) &&
       (await confirm('Are you sure?'))
     ) {
       await person.destroy()

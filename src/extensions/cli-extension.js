@@ -15,6 +15,12 @@ module.exports = toolbox => {
     return getEnquirer().prompt(questions)
   }
 
+  const marked = require('marked')
+  const TerminalRenderer = require('marked-terminal')
+  marked.setOptions({ renderer: new TerminalRenderer() })
+
+  toolbox.strings.marked = marked
+
   // enable this if you want to read configuration in from
   // the current folder's package.json (in a "bmdb-cli" property),
   // bmdb-cli.config.json, etc.

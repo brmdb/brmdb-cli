@@ -5,12 +5,20 @@ const makeRepeatable = require('../prompts/repeat')
 module.exports = toolbox => {
   const { customAsk, db } = toolbox
 
-  const completePromptLink = makeRepeatable(promptLink)
+  const completePromptLink = makeRepeatable('external link', promptLink)
 
   function fillPrompt(prompt, modelInstance) {
     return prompt.map(q => {
-      if (modelInstance[q.name]) return { ...q, initial: modelInstance[q.name] }
-      return q
+      if (!modelInstance[q.name]) {
+        return q
+      }
+
+      const value = modelInstance[q.name]
+      return {
+        ...q,
+        initial:
+          value instanceof Date ? value.toISOString().split('T')[0] : value
+      }
     })
   }
 
@@ -36,7 +44,7 @@ module.exports = toolbox => {
 
   async function promptForCreators(serieId) {
     const people = await db.Person.findAll({ order: [['name', 'ASC']] })
-    const prompt = makeRepeatable(promptCreator(people))
+    const prompt = makeRepeatable('creator', promptCreator(people))
 
     return promptRepeatable(prompt, p => ({
       serieId,
@@ -141,6 +149,25 @@ module.exports = toolbox => {
     return selectModelToEdit(db.Serie, 'serie', 'title', s => s.title)
   }
 
+  async function selectEditionToEdit() {
+    return selectModelToEdit(
+      db.Edition,
+      'edition',
+      'name',
+      e => `${e.serie.title} - ${e.name} (${e.label.publisher.name})`,
+      {
+        include: [
+          { model: db.Serie, as: 'serie' },
+          {
+            model: db.Label,
+            as: 'label',
+            include: [{ model: db.Publisher, as: 'publisher' }]
+          }
+        ]
+      }
+    )
+  }
+
   async function selectInstancesToRemove(
     instances,
     modelName,
@@ -186,6 +213,7 @@ module.exports = toolbox => {
     selectLabelToEdit,
     selectPersonToEdit,
     selectSerieToEdit,
+    selectEditionToEdit,
     selectLinksToRemove,
     selectCreatorsToRemove
   }

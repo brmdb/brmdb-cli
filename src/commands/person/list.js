@@ -3,7 +3,7 @@ module.exports = {
   description: 'List the people in the database',
   run: async toolbox => {
     const {
-      print: { info, table },
+      print: { info, listInstances },
       db: { Person }
     } = toolbox
 
@@ -14,8 +14,6 @@ module.exports = {
       return
     }
 
-    const peopleInTableFormat = people.map(p => [p.id, p.name])
-    const tableHeader = ['ID', 'Name']
-    table([tableHeader].concat(peopleInTableFormat), { format: 'lean' })
+    listInstances(people, ['id', 'name'])
   }
 }

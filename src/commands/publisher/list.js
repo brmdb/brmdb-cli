@@ -3,7 +3,7 @@ module.exports = {
   description: 'List all publishers in the database',
   run: async toolbox => {
     const {
-      print: { info, table },
+      print: { info, listInstances },
       db: { Publisher }
     } = toolbox
 
@@ -14,8 +14,6 @@ module.exports = {
       return
     }
 
-    const publishersInTableFormat = publishers.map(p => [p.id, p.name, p.site])
-    const tableData = [['ID', 'Name', 'Site']].concat(publishersInTableFormat)
-    table(tableData, { format: 'lean' })
+    listInstances(publishers, ['id', 'name', 'site'])
   }
 }
