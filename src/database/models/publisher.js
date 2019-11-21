@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       logoUrl: {
         type: DataTypes.VIRTUAL(DataTypes.STRING, ['id']),
         get() {
-          return `${dataUrl}/publishers/images/${this.id}.png`
+          return `${dataUrl}/publishers/images/${this.id}.jpg`
         }
       }
     },

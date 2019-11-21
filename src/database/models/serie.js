@@ -67,13 +67,13 @@ module.exports = (sequelize, DataTypes) => {
       coverUrl: {
         type: DataTypes.VIRTUAL(DataTypes.STRING, ['id']),
         get() {
-          return `${dataUrl}/series/images/cover/${this.id}.png`
+          return `${dataUrl}/series/images/cover/${this.id}.jpg`
         }
       },
       posterUrl: {
         type: DataTypes.VIRTUAL(DataTypes.STRING, ['id']),
         get() {
-          return `${dataUrl}/series/images/poster/${this.id}.png`
+          return `${dataUrl}/series/images/poster/${this.id}.jpg`
         }
       }
     },
