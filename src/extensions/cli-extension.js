@@ -1,20 +1,4 @@
-let enquirer = null
-
-function getEnquirer() {
-  if (enquirer) return enquirer
-
-  const Enquirer = require('enquirer')
-  enquirer = new Enquirer()
-  enquirer.register('editor', require('enquirer-prompt-editor'))
-
-  return enquirer
-}
-
 module.exports = toolbox => {
-  toolbox.customAsk = async questions => {
-    return getEnquirer().prompt(questions)
-  }
-
   const marked = require('marked')
   const TerminalRenderer = require('marked-terminal')
   marked.setOptions({ renderer: new TerminalRenderer() })
