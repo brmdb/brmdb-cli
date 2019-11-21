@@ -130,12 +130,13 @@ module.exports = toolbox => {
     folder,
     model,
     transformData = i => i,
-    options = {}
+    options = {},
+    fileName = 'id'
   ) {
     return async () => {
       const instances = await model.findAll(options)
       for (const instance of instances) {
-        const file = filesystem.path(folder, `${instance.id}.json`)
+        const file = filesystem.path(folder, `${instance[fileName]}.json`)
         await filesystem.writeAsync(file, transformData(instance))
       }
     }
@@ -297,6 +298,10 @@ module.exports = toolbox => {
       i => i.get({ plain: true }),
       {
         attributes: { exclude: ['labelId', 'serieId'] },
+        order: [
+          [db.sequelize.literal('volumes.number *1 ')],
+          [db.sequelize.col('volumes.number')]
+        ],
         include: [
           {
             model: db.ExternalLink,
@@ -320,9 +325,82 @@ module.exports = toolbox => {
                 attributes: ['id', 'name', 'logoUrl']
               }
             ]
+          },
+          {
+            model: db.Volume,
+            as: 'volumes',
+            attributes: [
+              'id',
+              'number',
+              'name',
+              'isbn',
+              'issn',
+              'releaseDate',
+              'coverUrl'
+            ]
           }
         ]
       }
+    )
+  }
+
+  const individualVolumePromise = (folder, mode) => {
+    return generateIndividualPromise(
+      folder,
+      db.Volume,
+      i => ({
+        ...i.get({ plain: true }),
+        extrasArray: undefined,
+        extras: i.extrasArray
+      }),
+      {
+        where: {
+          [mode]: {
+            [db.Sequelize.Op.ne]: null
+          }
+        },
+        order: [
+          [{ model: db.VolumePerson, as: 'involvedPeople' }, 'role'],
+          [
+            {
+              model: db.VolumePerson,
+              as: 'involvedPeople'
+            },
+            { model: db.Person, as: 'person' },
+            'name'
+          ]
+        ],
+        include: [
+          {
+            model: db.Edition,
+            as: 'edition',
+            attributes: [
+              'id',
+              'name',
+              'status',
+              'startDate',
+              'endDate',
+              'period'
+            ],
+            include: [
+              {
+                model: db.Serie,
+                as: 'serie',
+                attributes: ['id', 'title', 'coverUrl', 'posterUrl']
+              }
+            ]
+          },
+          {
+            model: db.VolumePerson,
+            as: 'involvedPeople',
+            attributes: ['id', 'role'],
+            include: [
+              { model: db.Person, as: 'person', attributes: ['id', 'name'] }
+            ]
+          }
+        ]
+      },
+      mode
     )
   }
 
@@ -333,7 +411,8 @@ module.exports = toolbox => {
       Serie: filesystem.path(folder, 'series'),
       Person: filesystem.path(folder, 'people'),
       Action: filesystem.path(folder, 'actions'),
-      Edition: filesystem.path(folder, 'editions')
+      Edition: filesystem.path(folder, 'editions'),
+      Volume: filesystem.path(folder, 'volumes')
     }
   }
 
@@ -409,6 +488,27 @@ module.exports = toolbox => {
           {
             title: 'Generating the individual files',
             task: individualEditionPromise(FOLDERS.Edition)
+          }
+        ]),
+      Volume: () =>
+        new Listr([
+          {
+            title: 'Generating the individual files by id',
+            task: individualVolumePromise(FOLDERS.Volume, 'id')
+          },
+          {
+            title: 'Generating the individual files by isbn',
+            task: individualVolumePromise(
+              filesystem.path(FOLDERS.Volume, 'isbn'),
+              'isbn'
+            )
+          },
+          {
+            title: 'Generating the individual files by issn',
+            task: individualVolumePromise(
+              filesystem.path(FOLDERS.Volume, 'issn'),
+              'issn'
+            )
           }
         ])
     }

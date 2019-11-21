@@ -9,18 +9,18 @@ module.exports = {
    * @param {DataTypes} Sequelize
    */
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('SeriePeople', {
+    await queryInterface.createTable('VolumePeople', {
       id: {
         type: Sequelize.UUID,
         allowNull: false,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true
       },
-      serieId: {
+      volumeId: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'Series',
+          model: 'Volumes',
           key: 'id'
         },
         onDelete: 'CASCADE'
@@ -54,6 +54,6 @@ module.exports = {
    * @param {DataTypes} Sequelize
    */
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('SeriePeople')
+    return queryInterface.dropTable('VolumePeople')
   }
 }

@@ -8,35 +8,46 @@ module.exports = {
    * @param {QueryInterface} queryInterface
    * @param {DataTypes} Sequelize
    */
-  up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('SeriePeople', {
+  up: (queryInterface, Sequelize) => {
+    return queryInterface.createTable('Volumes', {
       id: {
         type: Sequelize.UUID,
         allowNull: false,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true
       },
-      serieId: {
-        type: Sequelize.UUID,
+      number: {
         allowNull: false,
-        references: {
-          model: 'Series',
-          key: 'id'
-        },
-        onDelete: 'CASCADE'
+        type: Sequelize.STRING
       },
-      personId: {
-        type: Sequelize.UUID,
+      name: {
         allowNull: false,
-        references: {
-          model: 'People',
-          key: 'id'
-        },
-        onDelete: 'CASCADE'
+        type: Sequelize.TEXT
       },
-      role: {
-        type: Sequelize.STRING,
-        allowNull: false
+      synopsis: {
+        type: Sequelize.TEXT
+      },
+      isbn: {
+        type: Sequelize.STRING
+      },
+      issn: {
+        type: Sequelize.STRING
+      },
+      price: {
+        allowNull: false,
+        type: Sequelize.FLOAT
+      },
+      releaseDate: {
+        type: Sequelize.DATE
+      },
+      extras: {
+        allowNull: false,
+        type: Sequelize.TEXT,
+        defaultValue: '[]'
+      },
+      editionId: {
+        allowNull: false,
+        type: Sequelize.UUID
       },
       createdAt: {
         allowNull: false,
@@ -54,6 +65,6 @@ module.exports = {
    * @param {DataTypes} Sequelize
    */
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('SeriePeople')
+    return queryInterface.dropTable('Volumes')
   }
 }

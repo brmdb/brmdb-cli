@@ -42,12 +42,12 @@ module.exports = toolbox => {
     }))
   }
 
-  async function promptForCreators(serieId) {
+  async function promptForCreators(modelId, modelKey = 'serieId') {
     const people = await db.Person.findAll({ order: [['name', 'ASC']] })
     const prompt = makeRepeatable('creator', promptCreator(people))
 
     return promptRepeatable(prompt, p => ({
-      serieId,
+      [modelKey]: modelId,
       personId: p.personId,
       role: p.role
     }))
@@ -105,7 +105,7 @@ module.exports = toolbox => {
     model,
     modelName,
     messageField = 'name',
-    message = i => i.name,
+    choiceMessage = i => i.name,
     options = {}
   ) {
     const instances = await model.findAll({
@@ -113,13 +113,17 @@ module.exports = toolbox => {
       ...options
     })
 
+    if (instances.length === 0) {
+      return undefined
+    }
+
     const { modelToEdit } = await customAsk({
       type: 'autocomplete',
       name: 'modelToEdit',
       message: `What ${modelName} do you want to edit?`,
       choices: instances.map(i => ({
         name: i.id.toString(),
-        message: message(i),
+        message: choiceMessage(i),
         value: i.id.toString()
       }))
     })
@@ -163,6 +167,24 @@ module.exports = toolbox => {
             as: 'label',
             include: [{ model: db.Publisher, as: 'publisher' }]
           }
+        ]
+      }
+    )
+  }
+
+  async function selectVolumeToEdit(editionId) {
+    return selectModelToEdit(
+      db.Volume,
+      'volume',
+      '',
+      i => `#${i.number} - ${i.name}`,
+      {
+        order: [
+          [db.sequelize.literal('volume.number * 1')],
+          [db.sequelize.literal('volume.number')]
+        ],
+        include: [
+          { model: db.Edition, as: 'edition', where: { id: editionId } }
         ]
       }
     )
@@ -214,6 +236,7 @@ module.exports = toolbox => {
     selectPersonToEdit,
     selectSerieToEdit,
     selectEditionToEdit,
+    selectVolumeToEdit,
     selectLinksToRemove,
     selectCreatorsToRemove
   }

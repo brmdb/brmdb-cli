@@ -33,7 +33,10 @@ module.exports = {
     })
 
     const seriePrompt = require('../../prompts/serie')
-    const filledPrompt = fillPrompt(seriePrompt, serie)
+    const filledPrompt = fillPrompt(seriePrompt, {
+      ...serie.get({ plain: true }),
+      synonyms: serie.get('synonyms').join('|')
+    })
 
     const serieResult = await customAsk(filledPrompt)
     await serie.update({

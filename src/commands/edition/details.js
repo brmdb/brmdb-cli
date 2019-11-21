@@ -5,7 +5,7 @@ module.exports = {
     const {
       parameters,
       print: { tabulateInstance, listInstances, error },
-      db: { ExternalLink, Edition }
+      db: { sequelize, ExternalLink, Edition, Volume }
     } = toolbox
 
     if (!parameters.first) {
@@ -14,7 +14,14 @@ module.exports = {
     }
 
     const edition = await Edition.findOne({
-      include: [{ model: ExternalLink, as: 'externalLinks' }],
+      include: [
+        { model: ExternalLink, as: 'externalLinks' },
+        { model: Volume, as: 'volumes' }
+      ],
+      order: [
+        [sequelize.literal('volumes.number * 1')],
+        [sequelize.literal('volumes.number')]
+      ],
       where: { id: parameters.first }
     })
     if (!edition) {
@@ -30,6 +37,18 @@ module.exports = {
         ['id', 'name', 'type', 'url'],
         [38, 22, 14, 30]
       )
+    }
+
+    if (edition.volumes.length) {
+      listInstances(edition.volumes, [
+        'id',
+        'number',
+        'name',
+        'isbn',
+        'issn',
+        'price',
+        'releaseDate'
+      ])
     }
   }
 }

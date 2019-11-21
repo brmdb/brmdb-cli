@@ -49,7 +49,11 @@ module.exports = toolbox => {
       typeof k === 'object' ? k.head : customUpperFirst(k.replace('.', ' '))
     )
     const tableData = instances.map(i =>
-      attributes.map(k => get(i, typeof k === 'object' ? k.path : k))
+      attributes
+        .map(k => get(i, typeof k === 'object' ? k.path : k))
+        .map(v =>
+          v ? (v instanceof Date ? v.toISOString().split('T')[0] : v) : 'NULL'
+        )
     )
     toolbox.print.customTable([tableHeader].concat(tableData), {
       ...options,

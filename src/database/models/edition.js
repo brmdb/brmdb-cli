@@ -59,6 +59,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'editionId',
       otherKey: 'externalLinkId'
     })
+    Edition.hasMany(models.Volume, { as: 'volumes', foreignKey: 'editionId' })
   }
 
   return Edition

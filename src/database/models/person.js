@@ -30,12 +30,8 @@ module.exports = (sequelize, DataTypes) => {
       otherKey: 'externalLinkId'
     })
 
-    // Person.belongsToMany(models.Serie, {
-    //   through: models.SeriePerson,
-    //   as: 'works',
-    //   foreignKey: 'personId'
-    // })
     Person.hasMany(models.SeriePerson, { foreignKey: 'personId', as: 'works' })
+    Person.hasMany(models.VolumePerson, { foreignKey: 'personId', as: 'roles' })
   }
 
   return Person
