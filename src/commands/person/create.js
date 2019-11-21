@@ -14,7 +14,7 @@ module.exports = {
     const result = await customAsk(personPrompt)
     const person = await Person.create(result)
 
-    const addLinks = askToAddExternalLinks()
+    const addLinks = await askToAddExternalLinks()
 
     if (addLinks) {
       const linksToAdd = await promptForExternalLinks()

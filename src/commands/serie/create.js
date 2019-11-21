@@ -37,7 +37,7 @@ module.exports = {
     const addCreators = await askToAddCreators()
 
     if (addCreators) {
-      const creatorsToAdd = await promptForCreators()
+      const creatorsToAdd = await promptForCreators(serie.id)
 
       for (const creatorObj of creatorsToAdd) {
         await SeriePerson.create(creatorObj)
