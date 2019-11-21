@@ -7,7 +7,8 @@ module.exports = [
   {
     type: 'list',
     name: 'synonyms',
-    message: 'What are the alternative titles?'
+    message: 'What are the alternative titles?',
+    separator: /; */
   },
   {
     type: 'editor',

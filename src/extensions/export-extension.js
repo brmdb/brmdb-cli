@@ -110,6 +110,8 @@ module.exports = toolbox => {
       db.Serie,
       ss =>
         ss.map(s => ({
+          coverUrl: s.get('coverUrl'),
+          posterUrl: s.get('posterUrl'),
           ...s.dataValues,
           alternativeTitles: s.get('synonyms'),
           genres: s.get('genresArray')
