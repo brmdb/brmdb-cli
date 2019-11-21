@@ -234,6 +234,7 @@ module.exports = toolbox => {
         genres: i.get('genresArray')
       }),
       {
+        order: [[{ model: db.Edition, as: 'editions' }, 'startDate', 'DESC']],
         attributes: {
           exclude: ['synonyms', 'genresArray']
         },
