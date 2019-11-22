@@ -3,7 +3,7 @@ const promptCreator = require('../prompts/creator')
 const makeRepeatable = require('../prompts/repeat')
 
 module.exports = toolbox => {
-  const { customAsk, db } = toolbox
+  const { customAsk, db, strings } = toolbox
 
   const completePromptLink = makeRepeatable('external link', promptLink)
 
@@ -150,7 +150,16 @@ module.exports = toolbox => {
   }
 
   async function selectSerieToEdit() {
-    return selectModelToEdit(db.Serie, 'serie', 'title', s => s.title)
+    return selectModelToEdit(
+      db.Serie,
+      'serie',
+      'title',
+      s =>
+        s.title +
+        (s.type === 'MANGA'
+          ? ''
+          : ` (${strings.startCase(strings.lowerCase(s.type))})`)
+    )
   }
 
   async function selectEditionToEdit() {
@@ -158,7 +167,12 @@ module.exports = toolbox => {
       db.Edition,
       'edition',
       'name',
-      e => `${e.serie.title} - ${e.name} (${e.label.publisher.name})`,
+      e =>
+        `${e.serie.title}${
+          e.serie.type === 'MANGA'
+            ? ''
+            : ` ${strings.startCase(strings.lowerCase(e.serie.type))}`
+        } - ${e.name} (${e.label.publisher.name})`,
       {
         include: [
           { model: db.Serie, as: 'serie' },

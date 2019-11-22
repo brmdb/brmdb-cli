@@ -14,7 +14,7 @@ module.exports = series => [
         editions.map(e => ({
           name: e.id.toString(),
           message: `${title}${
-            type === 'MANGA' ? '' : startCase(lowerCase(type))
+            type === 'MANGA' ? '' : ` (${startCase(lowerCase(type))})`
           } - ${e.name}`,
           value: e.id.toString()
         }))
