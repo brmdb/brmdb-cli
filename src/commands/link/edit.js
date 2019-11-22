@@ -3,21 +3,21 @@ module.exports = {
   description: 'Edit a existing link in the database',
   run: async toolbox => {
     const {
-      parameters: { options },
+      parameters,
       print: { success, error },
       customAsk,
       db: { ExternalLink },
-      customAsk: { fillPrompt }
+      customPrompt: { fillPrompt }
     } = toolbox
 
-    if (!options.id) {
-      error('You need to specify an id with the --id option.')
+    if (!parameters.first) {
+      error('You need to specify an id.')
       return
     }
 
-    const link = await ExternalLink.findByPk(options.id)
+    const link = await ExternalLink.findByPk(parameters.first)
     if (!link) {
-      error(`A link with id ${options.id} does not exists.`)
+      error(`A link with id ${parameters.first} does not exists.`)
       return
     }
 
