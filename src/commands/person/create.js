@@ -12,6 +12,8 @@ module.exports = {
     const personPrompt = require('../../prompts/person')
 
     const result = await customAsk(personPrompt)
+    console.log(result)
+    return
     const person = await Person.create(result)
 
     const addLinks = await askToAddExternalLinks()

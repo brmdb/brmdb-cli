@@ -1,5 +1,5 @@
 const Enquirer = require('enquirer')
-const { edit } = require('external-editor')
+const { edit } = require('edit-briefly')
 
 module.exports = toolbox => {
   let enquirer = null
@@ -59,14 +59,12 @@ module.exports = toolbox => {
     async openEditor() {
       if (this.status === 'done') return
 
-      const extension = this.options.extension
-        ? '.' + this.options.extension
-        : ''
-
       this.stop()
 
       try {
-        this.value = edit(this.value, { postfix: extension })
+        this.value = await edit(this.value, {
+          extension: this.options.extension
+        })
         this.status = 'done'
         await this.submit()
       } catch (err) {
