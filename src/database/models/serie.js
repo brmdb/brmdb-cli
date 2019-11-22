@@ -78,14 +78,11 @@ module.exports = (sequelize, DataTypes) => {
         }
       },
       slug: {
-        type: DataTypes.VIRTUAL(DataTypes.STRING, ['title']),
+        type: DataTypes.VIRTUAL(DataTypes.STRING, ['title', 'type']),
         get() {
           return slug(
             this.title +
-              (this.type &&
-                (this.type === 'MANGA'
-                  ? ''
-                  : ' ' + this.type.replace('_', ' '))),
+              (this.type === 'MANGA' ? '' : ' ' + this.type.replace('_', ' ')),
             { lower: true }
           )
         }

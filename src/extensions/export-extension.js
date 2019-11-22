@@ -39,7 +39,7 @@ module.exports = toolbox => {
       folder,
       db.Serie,
       false,
-      { attributes: ['id', 'title', 'alternativeTitles', 'slug'] },
+      { attributes: ['id', 'title', 'alternativeTitles', 'type', 'slug'] },
       series => {
         const withAlternativeTitles = flatMap(series, s =>
           [{ id: s.id, title: s.title, slug: s.slug }].concat(
@@ -217,7 +217,14 @@ module.exports = toolbox => {
               {
                 model: db.Serie,
                 as: 'serie',
-                attributes: ['id', 'title', 'coverUrl', 'posterUrl', 'slug']
+                attributes: [
+                  'id',
+                  'title',
+                  'type',
+                  'coverUrl',
+                  'posterUrl',
+                  'slug'
+                ]
               }
             ]
           }
@@ -315,7 +322,7 @@ module.exports = toolbox => {
           {
             model: db.Serie,
             as: 'serie',
-            attributes: ['id', 'title', 'coverUrl', 'posterUrl', 'slug']
+            attributes: ['id', 'title', 'type', 'coverUrl', 'posterUrl', 'slug']
           },
           {
             model: db.Label,
@@ -389,7 +396,14 @@ module.exports = toolbox => {
               {
                 model: db.Serie,
                 as: 'serie',
-                attributes: ['id', 'title', 'coverUrl', 'posterUrl', 'slug']
+                attributes: [
+                  'id',
+                  'title',
+                  'type',
+                  'coverUrl',
+                  'posterUrl',
+                  'slug'
+                ]
               }
             ]
           },
