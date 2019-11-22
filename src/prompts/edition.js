@@ -1,3 +1,7 @@
+const {
+  strings: { startCase, lowerCase }
+} = require('gluegun/strings')
+
 module.exports = (series, labels) => [
   {
     type: 'autocomplete',
@@ -5,7 +9,9 @@ module.exports = (series, labels) => [
     message: 'From what serie is this edition?',
     choices: series.map(s => ({
       name: s.id.toString(),
-      message: s.title,
+      message:
+        s.title +
+        (s.type === 'MANGA' ? '' : ` (${startCase(lowerCase(s.type))})`),
       value: s.id.toString()
     }))
   },

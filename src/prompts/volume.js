@@ -1,4 +1,7 @@
 const flatMap = require('lodash.flatmap')
+const {
+  strings: { startCase, lowerCase }
+} = require('gluegun/strings')
 
 module.exports = series => [
   {
@@ -6,11 +9,13 @@ module.exports = series => [
     name: 'editionId',
     message: 'From what edition is this volume?',
     choices: flatMap(
-      series.map(s => ({ title: s.title, editions: s.editions })),
-      ({ title, editions }) =>
+      series.map(s => ({ title: s.title, type: s.type, editions: s.editions })),
+      ({ title, type, editions }) =>
         editions.map(e => ({
           name: e.id.toString(),
-          message: `${title} - ${e.name}`,
+          message: `${title}${
+            type === 'MANGA' ? '' : startCase(lowerCase(type))
+          } - ${e.name}`,
           value: e.id.toString()
         }))
     )
