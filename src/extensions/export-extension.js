@@ -23,13 +23,13 @@ module.exports = toolbox => {
   }
 
   const indexPublisherPromise = folder => {
-    return generateIndexPromise(folder, db.Publisher, false, {
-      attributes: ['id', 'name', 'slug']
+    return generateIndexPromise(folder, db.Publisher, true, {
+      attributes: ['id', 'name', 'slug', 'logoUrl']
     })
   }
 
   const indexPersonPromise = folder => {
-    return generateIndexPromise(folder, db.Person, false, {
+    return generateIndexPromise(folder, db.Person, true, {
       attributes: ['id', 'name', 'slug']
     })
   }
@@ -39,11 +39,27 @@ module.exports = toolbox => {
       folder,
       db.Serie,
       false,
-      { attributes: ['id', 'title', 'alternativeTitles', 'type', 'slug'] },
+      {
+        attributes: [
+          'id',
+          'title',
+          'alternativeTitles',
+          'type',
+          'slug',
+          'posterUrl'
+        ]
+      },
       series => {
         const withAlternativeTitles = flatMap(series, s =>
-          [{ id: s.id, title: s.title, slug: s.slug }].concat(
-            s.synonyms.map(a => ({ id: s.id, title: a, slug: s.slug }))
+          [
+            { id: s.id, title: s.title, slug: s.slug, posterUrl: s.posterUrl }
+          ].concat(
+            s.synonyms.map(a => ({
+              id: s.id,
+              title: a,
+              slug: s.slug,
+              posterUrl: s.posterUrl
+            }))
           )
         )
         return sortBy(withAlternativeTitles, ['title'])

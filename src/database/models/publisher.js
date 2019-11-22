@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       slug: {
         type: DataTypes.VIRTUAL(DataTypes.STRING, ['name']),
         get() {
-          return slug(this.name, { lower: true })
+          return slug(this.name, { charmap: { '&': 'e' }, lower: true })
         }
       }
     },
