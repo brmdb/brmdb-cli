@@ -1,5 +1,7 @@
 'use strict'
 
+const slug = require('slug')
+
 /** @typedef {import('sequelize/lib/sequelize')} Sequelize */
 /** @typedef {import('sequelize/lib/data-types')} DataTypes */
 
@@ -17,7 +19,13 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true
       },
       name: DataTypes.STRING,
-      bio: DataTypes.STRING
+      bio: DataTypes.STRING,
+      slug: {
+        type: DataTypes.VIRTUAL(DataTypes.STRING, ['name']),
+        get() {
+          return slug(this.name, { lower: true })
+        }
+      }
     },
     {}
   )

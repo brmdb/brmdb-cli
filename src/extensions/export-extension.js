@@ -24,13 +24,13 @@ module.exports = toolbox => {
 
   const indexPublisherPromise = folder => {
     return generateIndexPromise(folder, db.Publisher, false, {
-      attributes: ['id', 'name']
+      attributes: ['id', 'name', 'slug']
     })
   }
 
   const indexPersonPromise = folder => {
     return generateIndexPromise(folder, db.Person, false, {
-      attributes: ['id', 'name']
+      attributes: ['id', 'name', 'slug']
     })
   }
 
@@ -39,11 +39,11 @@ module.exports = toolbox => {
       folder,
       db.Serie,
       false,
-      { attributes: ['id', 'title', 'alternativeTitles'] },
+      { attributes: ['id', 'title', 'alternativeTitles', 'slug'] },
       series => {
         const withAlternativeTitles = flatMap(series, s =>
-          [{ id: s.id, title: s.title }].concat(
-            s.synonyms.map(a => ({ id: s.id, title: a }))
+          [{ id: s.id, title: s.title, slug: s.slug }].concat(
+            s.synonyms.map(a => ({ id: s.id, title: a, slug: s.slug }))
           )
         )
         return sortBy(withAlternativeTitles, ['title'])
@@ -91,7 +91,7 @@ module.exports = toolbox => {
           {
             model: db.Publisher,
             as: 'publisher',
-            attributes: ['id', 'name', 'logoUrl']
+            attributes: ['id', 'name', 'logoUrl', 'slug']
           }
         ]
       }
@@ -112,6 +112,7 @@ module.exports = toolbox => {
         ss.map(s => ({
           coverUrl: s.get('coverUrl'),
           posterUrl: s.get('posterUrl'),
+          slug: s.get('slug'),
           ...s.dataValues,
           alternativeTitles: s.get('synonyms'),
           genres: s.get('genresArray')
@@ -216,7 +217,7 @@ module.exports = toolbox => {
               {
                 model: db.Serie,
                 as: 'serie',
-                attributes: ['id', 'title', 'coverUrl', 'posterUrl']
+                attributes: ['id', 'title', 'coverUrl', 'posterUrl', 'slug']
               }
             ]
           }
@@ -225,13 +226,14 @@ module.exports = toolbox => {
     )
   }
 
-  const individualSeriePromise = folder => {
+  const individualSeriePromise = (folder, mode) => {
     return generateIndividualPromise(
       folder,
       db.Serie,
       i => ({
         coverUrl: i.get('coverUrl'),
         posterUrl: i.get('posterUrl'),
+        slug: i.get('slug'),
         ...i.dataValues,
         alternativeTitles: i.get('synonyms'),
         genres: i.get('genresArray')
@@ -256,7 +258,7 @@ module.exports = toolbox => {
               {
                 model: db.Person,
                 as: 'person',
-                attributes: ['id', 'name']
+                attributes: ['id', 'name', 'slug']
               }
             ]
           },
@@ -280,14 +282,15 @@ module.exports = toolbox => {
                   {
                     model: db.Publisher,
                     as: 'publisher',
-                    attributes: ['id', 'name', 'logoUrl']
+                    attributes: ['id', 'name', 'logoUrl', 'slug']
                   }
                 ]
               }
             ]
           }
         ]
-      }
+      },
+      mode
     )
   }
 
@@ -312,7 +315,7 @@ module.exports = toolbox => {
           {
             model: db.Serie,
             as: 'serie',
-            attributes: ['id', 'title', 'coverUrl', 'posterUrl']
+            attributes: ['id', 'title', 'coverUrl', 'posterUrl', 'slug']
           },
           {
             model: db.Label,
@@ -322,7 +325,7 @@ module.exports = toolbox => {
               {
                 model: db.Publisher,
                 as: 'publisher',
-                attributes: ['id', 'name', 'logoUrl']
+                attributes: ['id', 'name', 'logoUrl', 'slug']
               }
             ]
           },
@@ -386,7 +389,7 @@ module.exports = toolbox => {
               {
                 model: db.Serie,
                 as: 'serie',
-                attributes: ['id', 'title', 'coverUrl', 'posterUrl']
+                attributes: ['id', 'title', 'coverUrl', 'posterUrl', 'slug']
               }
             ]
           },
@@ -395,7 +398,11 @@ module.exports = toolbox => {
             as: 'involvedPeople',
             attributes: ['id', 'role'],
             include: [
-              { model: db.Person, as: 'person', attributes: ['id', 'name'] }
+              {
+                model: db.Person,
+                as: 'person',
+                attributes: ['id', 'name', 'slug']
+              }
             ]
           }
         ]
@@ -462,7 +469,14 @@ module.exports = toolbox => {
           },
           {
             title: 'Generating the individual files',
-            task: individualSeriePromise(FOLDERS.Serie)
+            task: individualSeriePromise(FOLDERS.Serie, 'id')
+          },
+          {
+            title: 'Generating the individual files by slug',
+            task: individualSeriePromise(
+              filesystem.path(FOLDERS.Serie, 'slug'),
+              'slug'
+            )
           }
         ]),
       Label: () =>

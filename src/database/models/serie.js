@@ -1,5 +1,6 @@
 'use strict'
 
+const slug = require('slug')
 const { dataUrl } = require('../../config/export')
 
 /** @typedef {import('sequelize/lib/sequelize')} Sequelize */
@@ -74,6 +75,19 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.VIRTUAL(DataTypes.STRING, ['id']),
         get() {
           return `${dataUrl}/series/images/poster/${this.id}.jpg`
+        }
+      },
+      slug: {
+        type: DataTypes.VIRTUAL(DataTypes.STRING, ['title']),
+        get() {
+          return slug(
+            this.title +
+              (this.type &&
+                (this.type === 'MANGA'
+                  ? ''
+                  : ' ' + this.type.replace('_', ' '))),
+            { lower: true }
+          )
         }
       }
     },
