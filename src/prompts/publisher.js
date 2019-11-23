@@ -14,5 +14,15 @@ module.exports = [
     type: 'input',
     name: 'site',
     message: 'What is the publisher site url?'
+  },
+  {
+    type: 'input',
+    name: 'logoUrl',
+    message: 'What is the url of the logo image?'
+  },
+  {
+    type: 'input',
+    name: 'bannerUrl',
+    message: 'What is the url of the banner image?'
   }
 ]

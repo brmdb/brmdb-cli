@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       name: DataTypes.STRING,
       bio: DataTypes.STRING,
+      imageUrl: DataTypes.TEXT,
       slug: {
         type: DataTypes.VIRTUAL(DataTypes.STRING, ['name']),
         get() {

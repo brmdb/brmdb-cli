@@ -2,7 +2,11 @@
   "name": "brmdb-cli",
   "version": "0.0.1",
   "description": "brmdb CLI",
-  "private": true,
+  "homepage": "https://github.com/brmdb/brmdb-cli",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brmdb/brmdb-cli.git"
+  },
   "bin": {
     "brmdb": "bin/brmdb"
   },

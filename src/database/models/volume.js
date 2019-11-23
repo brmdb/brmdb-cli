@@ -1,7 +1,5 @@
 'use strict'
 
-const { dataUrl } = require('../../config/export')
-
 /** @typedef {import('sequelize/lib/sequelize')} Sequelize */
 /** @typedef {import('sequelize/lib/data-types')} DataTypes */
 
@@ -26,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       price: DataTypes.FLOAT,
       releaseDate: DataTypes.DATE,
       extras: { type: DataTypes.TEXT, defaultValue: '[]' },
+      coverUrl: DataTypes.TEXT,
       editionId: DataTypes.UUID,
       extrasArray: {
         type: new DataTypes.VIRTUAL(DataTypes.STRING, ['extras']),
@@ -35,12 +34,6 @@ module.exports = (sequelize, DataTypes) => {
         set(val) {
           this.setDataValue('extrasArray', val)
           this.setDataValue('extras', JSON.stringify(val))
-        }
-      },
-      coverUrl: {
-        type: DataTypes.VIRTUAL(DataTypes.STRING, ['id']),
-        get() {
-          return `${dataUrl}/volumes/images/${this.id}.jpg`
         }
       }
     },

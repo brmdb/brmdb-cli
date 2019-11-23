@@ -8,7 +8,7 @@ module.exports = {
       exportData
     } = toolbox
 
-    const outputFolder = filesystem.path('public')
+    const outputFolder = filesystem.path('dist')
     filesystem.remove(outputFolder)
     filesystem.dir(outputFolder)
 

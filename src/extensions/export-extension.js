@@ -24,7 +24,7 @@ module.exports = toolbox => {
 
   const indexPublisherPromise = folder => {
     return generateIndexPromise(folder, db.Publisher, true, {
-      attributes: ['id', 'name', 'slug', 'logoUrl']
+      attributes: ['id', 'name', 'slug', 'logoUrl', 'bannerUrl']
     })
   }
 
@@ -107,7 +107,7 @@ module.exports = toolbox => {
           {
             model: db.Publisher,
             as: 'publisher',
-            attributes: ['id', 'name', 'logoUrl', 'slug']
+            attributes: ['id', 'name', 'logoUrl', 'bannerUrl', 'slug']
           }
         ]
       }
@@ -126,8 +126,6 @@ module.exports = toolbox => {
       db.Serie,
       ss =>
         ss.map(s => ({
-          coverUrl: s.get('coverUrl'),
-          posterUrl: s.get('posterUrl'),
           slug: s.get('slug'),
           ...s.dataValues,
           alternativeTitles: s.get('synonyms'),
@@ -237,7 +235,7 @@ module.exports = toolbox => {
                   'id',
                   'title',
                   'type',
-                  'coverUrl',
+                  'bannerUrl',
                   'posterUrl',
                   'slug'
                 ]
@@ -254,8 +252,6 @@ module.exports = toolbox => {
       folder,
       db.Serie,
       i => ({
-        coverUrl: i.get('coverUrl'),
-        posterUrl: i.get('posterUrl'),
         slug: i.get('slug'),
         ...i.dataValues,
         alternativeTitles: i.get('synonyms'),
@@ -305,7 +301,7 @@ module.exports = toolbox => {
                   {
                     model: db.Publisher,
                     as: 'publisher',
-                    attributes: ['id', 'name', 'logoUrl', 'slug']
+                    attributes: ['id', 'name', 'logoUrl', 'bannerUrl', 'slug']
                   }
                 ]
               }
@@ -338,7 +334,14 @@ module.exports = toolbox => {
           {
             model: db.Serie,
             as: 'serie',
-            attributes: ['id', 'title', 'type', 'coverUrl', 'posterUrl', 'slug']
+            attributes: [
+              'id',
+              'title',
+              'type',
+              'bannerUrl',
+              'posterUrl',
+              'slug'
+            ]
           },
           {
             model: db.Label,
@@ -416,7 +419,7 @@ module.exports = toolbox => {
                   'id',
                   'title',
                   'type',
-                  'coverUrl',
+                  'bannerUrl',
                   'posterUrl',
                   'slug'
                 ]

@@ -82,7 +82,12 @@ module.exports = series => [
   {
     type: 'list',
     name: 'extrasArray',
-    message: 'If the volume have promotional gifts, list them.',
+    message: 'If the volume have promotional gifts, list them:',
     separator: /\| */
+  },
+  {
+    type: 'input',
+    name: 'coverUrl',
+    message: 'What is the url of the cover image?'
   }
 ]

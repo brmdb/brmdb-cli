@@ -9,5 +9,10 @@ module.exports = [
     name: 'description',
     message: 'What will be the label description?',
     extension: 'md'
+  },
+  {
+    type: 'input',
+    name: 'logoUrl',
+    message: 'What is the url of the logo image?'
   }
 ]

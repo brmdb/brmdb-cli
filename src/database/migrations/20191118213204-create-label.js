@@ -12,9 +12,9 @@ module.exports = {
     return queryInterface.createTable('Labels', {
       id: {
         allowNull: false,
-        autoIncrement: true,
+        type: Sequelize.UUID,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        defaultValue: Sequelize.UUIDV4
       },
       name: {
         allowNull: false,
@@ -24,9 +24,12 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
+      logoUrl: {
+        type: Sequelize.TEXT
+      },
       publisherId: {
         allowNull: false,
-        type: Sequelize.INTEGER,
+        type: Sequelize.UUID,
         references: {
           model: 'Publishers',
           key: 'id'

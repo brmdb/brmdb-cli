@@ -109,5 +109,15 @@ module.exports = [
       { name: 'THRILLER', message: 'Thriller', value: 'THRILLER' },
       { name: 'VAMPIRE', message: 'Vampire', value: 'VAMPIRE' }
     ]
+  },
+  {
+    type: 'input',
+    name: 'posterUrl',
+    message: 'What is the url of the poster image?'
+  },
+  {
+    type: 'input',
+    name: 'bannerUrl',
+    message: 'What is the url of the banner image?'
   }
 ]

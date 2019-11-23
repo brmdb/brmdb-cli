@@ -6,5 +6,7 @@ coverage
 dist
 build
 .vscode
-public
+dist
 database.sqlite
+database.sqlite.bkp
+backup

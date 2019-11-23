@@ -45,6 +45,9 @@ module.exports = {
         type: Sequelize.TEXT,
         defaultValue: '[]'
       },
+      coverUrl: {
+        type: Sequelize.TEXT
+      },
       editionId: {
         allowNull: false,
         type: Sequelize.UUID

@@ -18,7 +18,7 @@ module.exports = {
       },
       title: {
         allowNull: false,
-        type: Sequelize.STRING
+        type: Sequelize.TEXT
       },
       alternativeTitles: {
         allowNull: false,
@@ -63,6 +63,12 @@ module.exports = {
         allowNull: false,
         type: Sequelize.TEXT,
         defaultValue: '[]'
+      },
+      bannerUrl: {
+        type: Sequelize.TEXT
+      },
+      posterUrl: {
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,

@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         'STORE',
         'VIDEO'
       ),
-      url: DataTypes.STRING
+      url: DataTypes.TEXT
     },
     {}
   )

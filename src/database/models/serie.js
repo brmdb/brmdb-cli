@@ -1,7 +1,6 @@
 'use strict'
 
 const slug = require('slug')
-const { dataUrl } = require('../../config/export')
 
 /** @typedef {import('sequelize/lib/sequelize')} Sequelize */
 /** @typedef {import('sequelize/lib/data-types')} DataTypes */
@@ -19,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true
       },
-      title: DataTypes.STRING,
+      title: DataTypes.TEXT,
       alternativeTitles: { type: DataTypes.TEXT, defaultValue: '[]' },
       synopsis: DataTypes.TEXT,
       status: DataTypes.ENUM('FINISHED', 'PUBLISHING', 'HIATUS'),
@@ -45,6 +44,8 @@ module.exports = (sequelize, DataTypes) => {
         'HENTAI'
       ),
       genres: { type: DataTypes.TEXT, defaultValue: '[]' },
+      bannerUrl: DataTypes.TEXT,
+      posterUrl: DataTypes.TEXT,
       synonyms: {
         type: new DataTypes.VIRTUAL(DataTypes.STRING, ['alternativeTitles']),
         get() {
@@ -63,18 +64,6 @@ module.exports = (sequelize, DataTypes) => {
         set(val) {
           this.setDataValue('genresArray', val)
           this.setDataValue('genres', JSON.stringify(val))
-        }
-      },
-      coverUrl: {
-        type: DataTypes.VIRTUAL(DataTypes.STRING, ['id']),
-        get() {
-          return `${dataUrl}/series/images/cover/${this.id}.jpg`
-        }
-      },
-      posterUrl: {
-        type: DataTypes.VIRTUAL(DataTypes.STRING, ['id']),
-        get() {
-          return `${dataUrl}/series/images/poster/${this.id}.jpg`
         }
       },
       slug: {

@@ -12,9 +12,9 @@ module.exports = {
     return queryInterface.createTable('Publishers', {
       id: {
         allowNull: false,
-        autoIncrement: true,
+        type: Sequelize.UUID,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        defaultValue: Sequelize.UUIDV4
       },
       name: {
         type: Sequelize.STRING,
@@ -24,17 +24,14 @@ module.exports = {
         type: Sequelize.TEXT
       },
       site: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false
       },
-      facebook: {
-        type: Sequelize.STRING
+      logoUrl: {
+        type: Sequelize.TEXT
       },
-      twitter: {
-        type: Sequelize.STRING
-      },
-      instagram: {
-        type: Sequelize.STRING
+      bannerUrl: {
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,
