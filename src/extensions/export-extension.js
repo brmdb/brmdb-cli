@@ -18,7 +18,7 @@ module.exports = toolbox => {
         ? transformData(instances)
         : instances.map(i => (plain ? i.get({ plain }) : i.dataValues))
       const file = filesystem.path(folder, 'list.json')
-      await filesystem.writeAsync(file, instances)
+      await filesystem.writeAsync(file, instances, { jsonIndent: 0 })
     }
   }
 
@@ -75,7 +75,7 @@ module.exports = toolbox => {
       })
       const transformed = transformData(instances)
       const file = filesystem.path(folder, 'all.json')
-      await toolbox.filesystem.writeAsync(file, transformed)
+      await toolbox.filesystem.writeAsync(file, transformed, { jsonIndent: 0 })
     }
   }
 
@@ -152,7 +152,9 @@ module.exports = toolbox => {
       const instances = await model.findAll(options)
       for (const instance of instances) {
         const file = filesystem.path(folder, `${instance[fileName]}.json`)
-        await filesystem.writeAsync(file, transformData(instance))
+        await filesystem.writeAsync(file, transformData(instance), {
+          jsonIndent: 0
+        })
       }
     }
   }
