@@ -1,4 +1,4 @@
-# bmdb-cli CLI
+# BrMDb CLI
 
 A CLI for updating the static data of the BrMDb project.
 
