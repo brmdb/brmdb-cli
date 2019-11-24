@@ -462,7 +462,7 @@ module.exports = toolbox => {
       const instances = await model.findAll({
         ...options,
         order: [['createdAt', 'DESC']],
-        limit: 10
+        limit: 20
       })
       await filesystem.writeAsync(
         filesystem.path(folder, 'recent.json'),
