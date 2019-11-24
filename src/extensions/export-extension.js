@@ -286,14 +286,7 @@ module.exports = toolbox => {
           {
             model: db.Edition,
             as: 'editions',
-            attributes: [
-              'id',
-              'name',
-              'status',
-              'period',
-              'startDate',
-              'endDate'
-            ],
+            attributes: { exclude: ['labelId', 'serieId'] },
             include: [
               {
                 model: db.Label,
@@ -304,6 +297,24 @@ module.exports = toolbox => {
                     model: db.Publisher,
                     as: 'publisher',
                     attributes: ['id', 'name', 'logoUrl', 'bannerUrl', 'slug']
+                  }
+                ]
+              },
+              {
+                model: db.Volume,
+                as: 'volumes',
+                include: [
+                  {
+                    model: db.VolumePerson,
+                    as: 'involvedPeople',
+                    attributes: ['role'],
+                    include: [
+                      {
+                        model: db.Person,
+                        as: 'person',
+                        attributes: ['id', 'name', 'slug', 'imageUrl']
+                      }
+                    ]
                   }
                 ]
               }
