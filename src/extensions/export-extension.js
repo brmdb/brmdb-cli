@@ -293,6 +293,12 @@ module.exports = toolbox => {
             attributes: { exclude: ['labelId', 'serieId'] },
             include: [
               {
+                model: db.ExternalLink,
+                as: 'externalLinks',
+                attributes: ['name', 'type', 'url'],
+                through: { attributes: [] }
+              },
+              {
                 model: db.Label,
                 as: 'label',
                 attributes: ['id', 'name', 'logoUrl'],
