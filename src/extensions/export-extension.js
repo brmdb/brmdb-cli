@@ -52,11 +52,18 @@ module.exports = toolbox => {
       series => {
         const withAlternativeTitles = flatMap(series, s =>
           [
-            { id: s.id, title: s.title, slug: s.slug, posterUrl: s.posterUrl }
+            {
+              id: s.id,
+              title: s.title,
+              type: s.type,
+              slug: s.slug,
+              posterUrl: s.posterUrl
+            }
           ].concat(
             s.synonyms.map(a => ({
               id: s.id,
               title: a,
+              type: s.type,
               slug: s.slug,
               posterUrl: s.posterUrl
             }))
@@ -467,6 +474,27 @@ module.exports = toolbox => {
     )
   }
 
+  const generateRecentPromise = (folder, model, options = {}) => {
+    return async () => {
+      const instances = await model.findAll({
+        ...options,
+        order: [['createdAt', 'DESC']],
+        limit: 10
+      })
+      await filesystem.writeAsync(
+        filesystem.path(folder, 'recent.json'),
+        instances,
+        { jsonIndent: 0 }
+      )
+    }
+  }
+
+  const recentSeriePromise = folder => {
+    return generateRecentPromise(folder, db.Serie, {
+      attributes: ['id', 'title', 'posterUrl', 'bannerUrl']
+    })
+  }
+
   function generateFolderMapping(folder) {
     return {
       Publisher: filesystem.path(folder, 'publishers'),
@@ -533,6 +561,10 @@ module.exports = toolbox => {
               filesystem.path(FOLDERS.Serie, 'slug'),
               'slug'
             )
+          },
+          {
+            title: 'Generating the recent list',
+            task: recentSeriePromise(FOLDERS.Serie)
           }
         ]),
       Label: () =>
