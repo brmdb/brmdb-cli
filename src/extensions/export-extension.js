@@ -260,7 +260,11 @@ module.exports = toolbox => {
         genres: i.get('genresArray')
       }),
       {
-        order: [[{ model: db.Edition, as: 'editions' }, 'startDate', 'DESC']],
+        order: [
+          [{ model: db.Edition, as: 'editions' }, 'startDate', 'DESC'],
+          [db.sequelize.literal('`editions.volumes.number` * 1')],
+          [db.sequelize.col('`editions.volumes.number`')]
+        ],
         attributes: {
           exclude: ['synonyms', 'genresArray']
         },
