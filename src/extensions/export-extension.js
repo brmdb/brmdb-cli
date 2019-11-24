@@ -474,7 +474,7 @@ module.exports = toolbox => {
 
   const recentSeriePromise = folder => {
     return generateRecentPromise(folder, db.Serie, {
-      attributes: ['id', 'title', 'posterUrl', 'bannerUrl']
+      attributes: ['id', 'title', 'posterUrl', 'bannerUrl', 'slug']
     })
   }
 
