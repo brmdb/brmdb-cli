@@ -1,6 +1,4 @@
 module.exports = toolbox => {
-  const flatMap = require('lodash.flatmap')
-  const sortBy = require('lodash.sortby')
   const Listr = require('listr')
 
   const { db, filesystem } = toolbox
@@ -50,26 +48,10 @@ module.exports = toolbox => {
         ]
       },
       series => {
-        const withAlternativeTitles = flatMap(series, s =>
-          [
-            {
-              id: s.id,
-              title: s.title,
-              type: s.type,
-              slug: s.slug,
-              posterUrl: s.posterUrl
-            }
-          ].concat(
-            s.synonyms.map(a => ({
-              id: s.id,
-              title: a,
-              type: s.type,
-              slug: s.slug,
-              posterUrl: s.posterUrl
-            }))
-          )
-        )
-        return sortBy(withAlternativeTitles, ['title'])
+        return series.map(s => ({
+          ...s.dataValues,
+          alternativeTitles: s.get('synonyms')
+        }))
       }
     )
   }
