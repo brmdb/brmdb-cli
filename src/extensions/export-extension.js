@@ -45,11 +45,12 @@ module.exports = toolbox => {
           'type',
           'slug',
           'posterUrl'
-        ]
+        ],
+        order: [['title', 'ASC']]
       },
       series => {
         return series.map(s => ({
-          ...s.dataValues,
+          ...s.get({ plain: true }),
           alternativeTitles: s.get('synonyms')
         }))
       }
