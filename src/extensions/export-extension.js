@@ -511,7 +511,11 @@ module.exports = toolbox => {
             }
           ],
           order: [[db.sequelize.col('label->publisher.name'), 'ASC']],
-          group: 'label->publisher.id'
+          group: 'label->publisher.id',
+          where: {
+            year: yearMonth.year,
+            month: yearMonth.month
+          }
         })
 
         const checklists = []
@@ -572,7 +576,11 @@ module.exports = toolbox => {
               order: [
                 [{ model: db.Label, as: 'label' }, 'name', 'ASC'],
                 [{ model: db.ChecklistItem, as: 'items' }, 'order', 'ASC']
-              ]
+              ],
+              where: {
+                year: yearMonth.year,
+                month: yearMonth.month
+              }
             })
           })
         }
