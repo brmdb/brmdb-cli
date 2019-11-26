@@ -510,6 +510,7 @@ module.exports = toolbox => {
               ]
             }
           ],
+          order: [[db.sequelize.col('label->publisher.name'), 'ASC']],
           group: 'label->publisher.id'
         })
 
