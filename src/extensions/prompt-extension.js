@@ -204,6 +204,39 @@ module.exports = toolbox => {
     )
   }
 
+  function formatDate(year, month) {
+    return new Date(year, month - 1, 1).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'long'
+    })
+  }
+
+  async function selectChecklistToEdit() {
+    return selectModelToEdit(
+      db.Checklist,
+      'checklist',
+      '',
+      i =>
+        `${formatDate(i.year, i.month)} - ${i.label.name} - ${
+          i.label.publisher.name
+        }`,
+      {
+        order: [
+          ['year', 'ASC'],
+          ['month', 'ASC'],
+          [{ model: db.Label, as: 'label' }, 'name', 'ASC']
+        ],
+        include: [
+          {
+            model: db.Label,
+            as: 'label',
+            include: [{ model: db.Publisher, as: 'publisher' }]
+          }
+        ]
+      }
+    )
+  }
+
   async function selectInstancesToRemove(
     instances,
     modelName,
@@ -251,6 +284,7 @@ module.exports = toolbox => {
     selectSerieToEdit,
     selectEditionToEdit,
     selectVolumeToEdit,
+    selectChecklistToEdit,
     selectLinksToRemove,
     selectCreatorsToRemove
   }

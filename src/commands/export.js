@@ -19,7 +19,8 @@ module.exports = {
       'Edition',
       'Volume',
       'Person',
-      'Action'
+      'Action',
+      'Checklist'
     ])
     success('Database exported with success.')
   }

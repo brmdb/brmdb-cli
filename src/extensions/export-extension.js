@@ -478,6 +478,112 @@ module.exports = toolbox => {
     })
   }
 
+  const checklistPromise = folder => {
+    return async () => {
+      // Get all year-month.
+      const yearMonths = await db.Checklist.findAll({
+        attributes: [
+          [db.sequelize.literal("`year` || '-' || `month`"), 'yearMonth'],
+          'year',
+          'month'
+        ],
+        group: 'yearMonth'
+      })
+      await filesystem.writeAsync(
+        filesystem.path(folder, 'list.json'),
+        yearMonths.map(i => i.get('yearMonth')),
+        { jsonIndent: 0 }
+      )
+
+      for (const yearMonth of yearMonths) {
+        const publishersToGroup = await db.Checklist.findAll({
+          include: [
+            {
+              model: db.Label,
+              as: 'label',
+              include: [
+                {
+                  model: db.Publisher,
+                  as: 'publisher',
+                  attributes: ['id', 'slug', 'name', 'logoUrl']
+                }
+              ]
+            }
+          ],
+          group: 'label->publisher.id'
+        })
+
+        const checklists = []
+        for (const pub of publishersToGroup) {
+          checklists.push({
+            publisher: pub.label.publisher,
+            checklist: await db.Checklist.findAll({
+              attributes: ['id'],
+              include: [
+                {
+                  model: db.ChecklistItem,
+                  as: 'items',
+                  attributes: ['order'],
+                  include: [
+                    {
+                      model: db.Volume,
+                      as: 'volume',
+                      attributes: [
+                        'id',
+                        'number',
+                        'name',
+                        'isbn',
+                        'issn',
+                        'price',
+                        'releaseDate',
+                        'coverUrl'
+                      ],
+                      include: [
+                        {
+                          model: db.Edition,
+                          as: 'edition',
+                          attributes: ['id', 'name'],
+                          include: [
+                            {
+                              model: db.Serie,
+                              as: 'serie',
+                              attributes: [
+                                'id',
+                                'slug',
+                                'title',
+                                'type',
+                                'bannerUrl'
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  model: db.Label,
+                  as: 'label',
+                  attributes: ['id', 'name', 'logoUrl'],
+                  where: { publisherId: pub.label.publisherId }
+                }
+              ],
+              order: [
+                [{ model: db.Label, as: 'label' }, 'name', 'ASC'],
+                [{ model: db.ChecklistItem, as: 'items' }, 'order', 'ASC']
+              ]
+            })
+          })
+        }
+
+        await filesystem.writeAsync(
+          filesystem.path(folder, `${yearMonth.get('yearMonth')}.json`),
+          checklists
+        )
+      }
+    }
+  }
+
   function generateFolderMapping(folder) {
     return {
       Publisher: filesystem.path(folder, 'publishers'),
@@ -486,7 +592,8 @@ module.exports = toolbox => {
       Person: filesystem.path(folder, 'people'),
       Action: filesystem.path(folder, 'actions'),
       Edition: filesystem.path(folder, 'editions'),
-      Volume: filesystem.path(folder, 'volumes')
+      Volume: filesystem.path(folder, 'volumes'),
+      Checklist: filesystem.path(folder, 'checklists')
     }
   }
 
@@ -594,6 +701,13 @@ module.exports = toolbox => {
               filesystem.path(FOLDERS.Volume, 'issn'),
               'issn'
             )
+          }
+        ]),
+      Checklist: () =>
+        new Listr([
+          {
+            title: 'Generating the checklists',
+            task: checklistPromise(FOLDERS.Checklist)
           }
         ])
     }
