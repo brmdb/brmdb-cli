@@ -578,7 +578,8 @@ module.exports = toolbox => {
 
         await filesystem.writeAsync(
           filesystem.path(folder, `${yearMonth.get('yearMonth')}.json`),
-          checklists
+          checklists,
+          { jsonIndent: 0 }
         )
       }
     }
